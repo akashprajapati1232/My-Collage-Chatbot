@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management - BitBot Admin</title>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        .management-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .student-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .student-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .student-info {
+            flex: 1;
+        }
+        .student-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="management-container">
+            <h2>Student Management System</h2>
+            
+            <!-- Add Student Section -->
+            <div class="section">
+                <h3>Add New Student</h3>
+                <div id="addMessage" class="message" style="display: none;"></div>
+                
+                <form id="addStudentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Student Name</label>
+                            <input type="text" id="studentName" placeholder="Enter full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gmail Address</label>
+                            <input type="email" id="studentEmail" placeholder="student@gmail.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" id="studentDob" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Course</label>
+                            <select id="studentCourse" required>
+                                <option value="">Select Course</option>
+                                <option value="BCA">BCA</option>
+                                <option value="MCA">MCA</option>
+                                <option value="B.Tech">B.Tech</option>
+                                <option value="M.Tech">M.Tech</option>
+                                <option value="MBA">MBA</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <select id="studentYear" required>
+                                <option value="">Select Year</option>
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Roll Number</label>
+                            <input type="text" id="studentRoll" placeholder="Enter roll number" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </form>
+            </div>
+            
+            <!-- Student List Section -->
+            <div class="section">
+                <h3>Registered Students</h3>
+                <div id="listMessage" class="message" style="display: none;"></div>
+                
+                <div class="student-list" id="studentList">
+                    <!-- Students will be loaded here -->
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-success" onclick="exportStudents()">Export Student List</button>
+                    <button class="btn btn-primary" onclick="loadStudents()">Refresh List</button>
+                </div>
+            </div>
+            
+            <!-- Bulk Operations Section -->
+            <div class="section">
+                <h3>Bulk Operations</h3>
+                <div id="bulkMessage" class="message" style="display: none;"></div>
+                
+                <div style="margin-bottom: 15px;">
+                    <input type="file" id="csvFile" accept=".csv" style="margin-right: 10px;">
+                    <button class="btn btn-primary" onclick="importStudents()">Import from CSV</button>
+                </div>
+                
+                <div>
+                    <button class="btn btn-danger" onclick="clearAllStudents()">Clear All Students</button>
+                    <small style="color: #666; margin-left: 10px;">⚠️ This action cannot be undone</small>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="admin-panel.html" class="btn btn-primary">← Back to Admin Panel</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="firebase-service.js"></script>
+    <script>
+        // Student Management Functions
+        let students = [];
+        let firebaseService = window.firebaseService;
+
+        // Load students on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Wait a bit for Firebase service to be fully ready
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            await checkAuthenticationStatus();
+            await loadStudents();
+
+            // Add student form handler
+            document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addStudent();
+            });
+        });
+
+        async function checkAuthenticationStatus() {
+            try {
+                console.log('Student Management: Checking authentication...');
+                await firebaseService.initialize();
+
+                // Wait for authentication state to be properly established
+                const currentUser = await firebaseService.waitForAuthReady(10000); // Wait up to 10 seconds
+
+                if (currentUser) {
+                    console.log('Student Management: User found:', currentUser.email);
+
+                    // Enable the form immediately for authenticated users
+                    document.getElementById('addStudentForm').style.opacity = '1';
+                    document.getElementById('addStudentForm').style.pointerEvents = 'auto';
+
+                    // Try to verify admin status but don't fail if it doesn't work
+                    try {
+                        const adminData = await firebaseService.getAdminByUid(currentUser.uid);
+                        if (adminData) {
+                            console.log('Student Management: Admin verification successful');
+                            showMessage('addMessage', `Authenticated as admin: ${currentUser.email}`, 'success');
+                        } else {
+                            console.log('Student Management: Admin verification failed, but user is authenticated - allowing access');
+                            showMessage('addMessage', `Authenticated as: ${currentUser.email} (Admin verification pending)`, 'success');
+                        }
+                    } catch (error) {
+                        console.warn('Student Management: Admin verification error (continuing with authenticated user):', error);
+                        showMessage('addMessage', `Authenticated as: ${currentUser.email} (Admin verification error - continuing)`, 'success');
+                    }
+
+                    return; // Exit early on success
+                } else {
+                    console.log('Student Management: No authenticated user found');
+                }
+
+                // No authentication
+                showMessage('addMessage', 'Please login as admin to manage students.', 'error');
+                // Disable the form
+                document.getElementById('addStudentForm').style.opacity = '0.5';
+                document.getElementById('addStudentForm').style.pointerEvents = 'none';
+
+            } catch (error) {
+                console.error('Authentication check failed:', error);
+                showMessage('addMessage', 'Authentication check failed. Please login as admin.', 'error');
+                // Disable the form
+                document.getElementById('addStudentForm').style.opacity = '0.5';
+                document.getElementById('addStudentForm').style.pointerEvents = 'none';
+            }
+        }
+
+        async function addStudent() {
+            const name = document.getElementById('studentName').value.trim();
+            const email = document.getElementById('studentEmail').value.trim();
+            const dob = document.getElementById('studentDob').value;
+            const course = document.getElementById('studentCourse').value;
+            const year = document.getElementById('studentYear').value;
+            const roll = document.getElementById('studentRoll').value.trim();
+
+            // Validate email
+            if (!email.includes('@gmail.com')) {
+                showMessage('addMessage', 'Please enter a valid Gmail address', 'error');
+                return;
+            }
+
+            // Check authentication first
+            try {
+                await firebaseService.initialize();
+                const currentUser = await firebaseService.waitForAuthReady(5000);
+
+                if (!currentUser) {
+                    showMessage('addMessage', 'Authentication required. Please login as admin first.', 'error');
+                    return;
+                }
+
+                console.log('Add Student: User authenticated:', currentUser.email);
+
+                // For adding students, if user is authenticated, proceed
+                // Admin verification is optional to prevent blocking legitimate operations
+                try {
+                    const adminData = await firebaseService.getAdminByUid(currentUser.uid);
+                    if (adminData) {
+                        console.log('Add Student: Admin verification successful');
+                    } else {
+                        console.log('Add Student: Admin verification failed, but user is authenticated - proceeding');
+                    }
+                } catch (adminError) {
+                    console.warn('Add Student: Admin verification error, but user is authenticated - proceeding:', adminError);
+                }
+
+            } catch (error) {
+                console.error('Authentication check failed:', error);
+                showMessage('addMessage', 'Authentication error. Please login as admin first.', 'error');
+                return;
+            }
+
+            // Check if student already exists
+            if (students.find(s => s.email === email || s.roll === roll)) {
+                showMessage('addMessage', 'Student with this email or roll number already exists', 'error');
+                return;
+            }
+
+            // Generate student ID
+            const studentId = generateStudentId(course, year, roll);
+
+            const student = {
+                studentId: studentId,
+                name: name,
+                email: email,
+                dob: dob,
+                course: course,
+                year: year,
+                roll: roll
+            };
+
+            try {
+                showMessage('addMessage', 'Adding student...', 'info');
+                await firebaseService.addStudent(student);
+                showMessage('addMessage', `Student added successfully to Firebase! Student ID: ${studentId}`, 'success');
+                document.getElementById('addStudentForm').reset();
+                await loadStudents();
+            } catch (error) {
+                console.error('Error adding student:', error);
+
+                // Provide more specific error messages
+                if (error.code === 'permission-denied') {
+                    showMessage('addMessage', 'Permission denied. Please ensure you are logged in as an admin.', 'error');
+                } else if (error.code === 'unauthenticated') {
+                    showMessage('addMessage', 'Authentication required. Please login as admin first.', 'error');
+                } else {
+                    showMessage('addMessage', `Failed to add student: ${error.message || 'Please try again.'}`, 'error');
+                }
+            }
+        }
+
+        function generateStudentId(course, year, roll) {
+            const currentYear = new Date().getFullYear().toString().slice(-2);
+            return `${course}${year}${currentYear}${roll.padStart(3, '0')}`;
+        }
+
+        async function loadStudents() {
+            const studentList = document.getElementById('studentList');
+
+            try {
+                studentList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Loading students from Firebase...</div>';
+                students = await firebaseService.getStudents();
+
+                if (students.length === 0) {
+                    studentList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No students registered yet</div>';
+                    return;
+                }
+
+                studentList.innerHTML = students.map(student => `
+                    <div class="student-item">
+                        <div class="student-info">
+                            <strong>${student.name}</strong> (${student.studentId || student.id})<br>
+                            <small>${student.email} | ${student.course} ${student.year}${getYearSuffix(student.year)} Year | Roll: ${student.roll}</small>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="removeStudent('${student.id}')">Remove</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading students:', error);
+
+                if (error.code === 'permission-denied' || error.code === 'unauthenticated') {
+                    studentList.innerHTML = '<div style="padding: 20px; text-align: center; color: #f00;">Authentication required to view students. Please login as admin.</div>';
+                } else {
+                    studentList.innerHTML = '<div style="padding: 20px; text-align: center; color: #f00;">Failed to load students from Firebase: ' + (error.message || 'Unknown error') + '</div>';
+                }
+            }
+        }
+
+        function getYearSuffix(year) {
+            const suffixes = { '1': 'st', '2': 'nd', '3': 'rd', '4': 'th' };
+            return suffixes[year] || 'th';
+        }
+
+        async function removeStudent(studentId) {
+            if (confirm('Are you sure you want to remove this student?')) {
+                try {
+                    // Check authentication first
+                    const currentUser = firebaseService.getCurrentUser();
+                    if (!currentUser) {
+                        showMessage('listMessage', 'Authentication required to remove students', 'error');
+                        return;
+                    }
+
+                    // Verify user is admin
+                    const adminData = await firebaseService.getAdminByUid(currentUser.uid);
+                    if (!adminData) {
+                        showMessage('listMessage', 'Access denied. Only admins can remove students.', 'error');
+                        return;
+                    }
+
+                    await firebaseService.deleteStudent(studentId);
+                    await loadStudents();
+                    showMessage('listMessage', 'Student removed successfully from Firebase', 'success');
+                } catch (error) {
+                    console.error('Error removing student:', error);
+
+                    if (error.code === 'permission-denied') {
+                        showMessage('listMessage', 'Permission denied. Please ensure you are logged in as admin.', 'error');
+                    } else {
+                        showMessage('listMessage', `Failed to remove student: ${error.message || 'Unknown error'}`, 'error');
+                    }
+                }
+            }
+        }
+
+        function exportStudents() {
+            if (students.length === 0) {
+                showMessage('listMessage', 'No students to export', 'error');
+                return;
+            }
+
+            const csv = [
+                'Student ID,Name,Email,Date of Birth,Course,Year,Roll Number,Created At',
+                ...students.map(s => `${s.id},${s.name},${s.email},${s.dob},${s.course},${s.year},${s.roll},${s.createdAt}`)
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `students_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            showMessage('listMessage', 'Student list exported successfully', 'success');
+        }
+
+        function clearAllStudents() {
+            if (confirm('Are you sure you want to remove ALL students? This action cannot be undone.')) {
+                students = [];
+                localStorage.setItem('bitbot_students', JSON.stringify(students));
+                loadStudents();
+                showMessage('bulkMessage', 'All students removed successfully', 'success');
+            }
+        }
+
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

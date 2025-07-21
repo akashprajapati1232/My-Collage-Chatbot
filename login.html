@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - BitBot | Bhagwant Institute of Technology</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+
+    <!-- Firebase will be initialized by firebase-service.js -->
+</head>
+<body>
+    <div class="login-container">
+        <!-- Background Pattern -->
+        <div class="bg-pattern"></div>
+        
+        <!-- Login Card -->
+        <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="logo-section">
+                    <div class="bot-avatar">🤖</div>
+                    <h1 class="login-title">BitBot</h1>
+                    <p class="login-subtitle">Student Portal</p>
+                </div>
+                <p class="institute-name">Bhagwant Institute of Technology</p>
+            </div>
+
+            <!-- Login Form -->
+            <form class="login-form" id="studentLoginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Gmail Address</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your Gmail address"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <input
+                            type="date"
+                            id="dob"
+                            name="dob"
+                            placeholder="Select your date of birth"
+                            required
+                            autocomplete="bday"
+                        >
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <span id="errorText">Invalid credentials. Please try again.</span>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="btn-text">Sign In</span>
+                    <div class="btn-loader" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+
+                <!-- Help Text -->
+                <div class="forgot-password">
+                    <p style="color: #666; font-size: 14px; text-align: center; margin: 0;">
+                        Use your Gmail provided at admission and Date of Birth
+                    </p>
+                </div>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>Need help? Contact your administrator</p>
+                <div class="admin-link">
+                    <a href="admin-login.html">Admin Login</a>
+                </div>
+                <div style="margin-top: 12px;">
+                    <a href="index.html" style="color: #666; text-decoration: none; font-size: 14px;">← Back to Public Chatbot</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="copyright">
+            <p>&copy; 2025 BitBot | Developed by Akash Prajapati, BCA 3rd Year</p>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="firebase-service.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Initialize student login
+        if (typeof initializeStudentLogin === 'function') {
+            initializeStudentLogin();
+        }
+    </script>
+</body>
+</html>

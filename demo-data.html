@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Data Setup - BitBot Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #2c5aa0;
+        }
+        button {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #2c5aa0;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 BitBot Admin Panel - Demo Data Setup</h1>
+        
+        <div class="info status">
+            <strong>Note:</strong> This tool will populate your Firestore database with sample data for testing the admin panel. 
+            Make sure you're connected to the correct Firebase project before proceeding.
+        </div>
+
+        <div class="section">
+            <h3>📚 Sample Courses</h3>
+            <p>Add sample courses like BCA, MCA, B.Tech, etc.</p>
+            <button onclick="addSampleCourses()">Add Sample Courses</button>
+            <div id="coursesStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>📅 Sample Timetables</h3>
+            <p>Add sample timetables for different courses and years.</p>
+            <button onclick="addSampleTimetables()">Add Sample Timetables</button>
+            <div id="timetablesStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>📖 Sample Materials</h3>
+            <p>Add sample study materials and syllabus.</p>
+            <button onclick="addSampleMaterials()">Add Sample Materials</button>
+            <div id="materialsStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>📢 Sample Notices</h3>
+            <p>Add sample notices and announcements.</p>
+            <button onclick="addSampleNotices()">Add Sample Notices</button>
+            <div id="noticesStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>💰 Sample Fee Structures</h3>
+            <p>Add sample fee structures for courses.</p>
+            <button onclick="addSampleFees()">Add Sample Fees</button>
+            <div id="feesStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>👨‍🏫 Sample Faculty</h3>
+            <p>Add sample faculty information.</p>
+            <button onclick="addSampleFaculty()">Add Sample Faculty</button>
+            <div id="facultyStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>🏛️ College Information</h3>
+            <p>Add sample college information.</p>
+            <button onclick="addCollegeInfo()">Add College Info</button>
+            <div id="collegeStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>👥 Sample Students</h3>
+            <p>Add sample student records.</p>
+            <button onclick="addSampleStudents()">Add Sample Students</button>
+            <div id="studentsStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>🔄 All Data</h3>
+            <p>Add all sample data at once.</p>
+            <button onclick="addAllSampleData()" style="background: #28a745;">Add All Sample Data</button>
+            <button onclick="clearAllData()" style="background: #dc3545;">Clear All Data</button>
+            <div id="allDataStatus"></div>
+        </div>
+
+        <div class="warning status">
+            <strong>Warning:</strong> The "Clear All Data" button will permanently delete all data from your Firestore database. 
+            Use with caution and only on test databases.
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="firebase-service.js"></script>
+    
+    <script>
+        let db;
+        
+        // Initialize Firebase
+        async function initFirebase() {
+            try {
+                // Wait for Firebase service to be ready
+                await new Promise(resolve => {
+                    const checkFirebase = () => {
+                        if (typeof firebase !== 'undefined' && firebase.firestore) {
+                            resolve();
+                        } else {
+                            setTimeout(checkFirebase, 100);
+                        }
+                    };
+                    checkFirebase();
+                });
+                
+                db = firebase.firestore();
+                console.log('Firebase initialized successfully');
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
+                showStatus('allDataStatus', 'Error initializing Firebase: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type} status">${message}</div>`;
+        }
+
+        async function addSampleCourses() {
+            try {
+                const courses = [
+                    {
+                        courseName: "Bachelor of Computer Applications (BCA)",
+                        duration: "3 Years",
+                        department: "Computer Science",
+                        totalSeats: 60,
+                        hodName: "Dr. Rajesh Kumar",
+                        counsellor: "Prof. Priya Sharma",
+                        scholarshipOpportunities: "Merit-based scholarships available for top 10% students. SC/ST scholarships as per government norms.",
+                        feeStructure: "Annual Fee: ₹45,000. Semester Fee: ₹22,500 each.",
+                        admissionEligibility: "12th pass with Mathematics as a subject. Minimum 50% marks required.",
+                        courseAffiliation: "Affiliated to State University"
+                    },
+                    {
+                        courseName: "Master of Computer Applications (MCA)",
+                        duration: "2 Years",
+                        department: "Computer Science",
+                        totalSeats: 30,
+                        hodName: "Dr. Rajesh Kumar",
+                        counsellor: "Dr. Amit Singh",
+                        scholarshipOpportunities: "Research assistantships available. Industry-sponsored scholarships for meritorious students.",
+                        feeStructure: "Annual Fee: ₹65,000. Semester Fee: ₹32,500 each.",
+                        admissionEligibility: "Bachelor's degree with Mathematics at 10+2 or graduation level. Minimum 50% marks.",
+                        courseAffiliation: "Affiliated to State University"
+                    },
+                    {
+                        courseName: "Bachelor of Technology (B.Tech) - Computer Science",
+                        duration: "4 Years",
+                        department: "Engineering",
+                        totalSeats: 120,
+                        hodName: "Dr. Suresh Patel",
+                        counsellor: "Prof. Neha Gupta",
+                        scholarshipOpportunities: "JEE rank-based scholarships. Industry partnerships for internship stipends.",
+                        feeStructure: "Annual Fee: ₹85,000. Semester Fee: ₹42,500 each.",
+                        admissionEligibility: "12th pass with PCM. JEE Main qualification required. Minimum 60% in 12th.",
+                        courseAffiliation: "Affiliated to Technical University"
+                    }
+                ];
+
+                for (const course of courses) {
+                    await db.collection('courses').add({
+                        ...course,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('coursesStatus', `Successfully added ${courses.length} sample courses!`, 'success');
+            } catch (error) {
+                showStatus('coursesStatus', 'Error adding courses: ' + error.message, 'error');
+            }
+        }
+
+        async function addSampleTimetables() {
+            try {
+                const timetables = [
+                    {
+                        course: "Bachelor of Computer Applications (BCA)",
+                        yearSemester: "1st Year - 1st Semester",
+                        facultyName: "Prof. Priya Sharma",
+                        schedule: {
+                            monday: "9:00-10:00 Programming Fundamentals\n10:00-11:00 Mathematics\n11:30-12:30 Computer Fundamentals",
+                            tuesday: "9:00-10:00 English Communication\n10:00-11:00 Programming Lab\n11:30-12:30 Digital Electronics",
+                            wednesday: "9:00-10:00 Programming Fundamentals\n10:00-11:00 Mathematics\n11:30-12:30 Environmental Studies",
+                            thursday: "9:00-10:00 Computer Fundamentals\n10:00-11:00 Programming Lab\n11:30-12:30 Digital Electronics",
+                            friday: "9:00-10:00 English Communication\n10:00-11:00 Mathematics\n11:30-12:30 Programming Fundamentals",
+                            saturday: "9:00-10:00 Practical Session\n10:00-11:00 Library Period"
+                        },
+                        pdfImageLink: "https://example.com/bca-1st-timetable.pdf"
+                    },
+                    {
+                        course: "Master of Computer Applications (MCA)",
+                        yearSemester: "1st Year - 1st Semester",
+                        facultyName: "Dr. Amit Singh",
+                        schedule: {
+                            monday: "9:00-10:00 Advanced Programming\n10:00-11:00 Database Systems\n11:30-12:30 Computer Networks",
+                            tuesday: "9:00-10:00 Software Engineering\n10:00-11:00 Algorithm Analysis\n11:30-12:30 Research Methodology",
+                            wednesday: "9:00-10:00 Advanced Programming Lab\n10:00-11:00 Database Lab\n11:30-12:30 Project Work",
+                            thursday: "9:00-10:00 Computer Networks\n10:00-11:00 Software Engineering\n11:30-12:30 Algorithm Analysis",
+                            friday: "9:00-10:00 Database Systems\n10:00-11:00 Advanced Programming\n11:30-12:30 Seminar",
+                            saturday: "9:00-10:00 Project Presentation\n10:00-11:00 Industry Interaction"
+                        }
+                    }
+                ];
+
+                for (const timetable of timetables) {
+                    await db.collection('timetables').add({
+                        ...timetable,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('timetablesStatus', `Successfully added ${timetables.length} sample timetables!`, 'success');
+            } catch (error) {
+                showStatus('timetablesStatus', 'Error adding timetables: ' + error.message, 'error');
+            }
+        }
+
+        async function addSampleMaterials() {
+            try {
+                const materials = [
+                    {
+                        course: "Bachelor of Computer Applications (BCA)",
+                        semester: "1st Semester",
+                        subjectName: "Programming Fundamentals",
+                        fileType: "Syllabus",
+                        refBooks: "1. Programming with C - Byron Gottfried\n2. Let Us C - Yashavant Kanetkar\n3. C Programming Language - Dennis Ritchie",
+                        fileUrl: "https://example.com/programming-fundamentals-syllabus.pdf"
+                    },
+                    {
+                        course: "Master of Computer Applications (MCA)",
+                        semester: "1st Semester",
+                        subjectName: "Advanced Programming",
+                        fileType: "Notes",
+                        refBooks: "1. Java: The Complete Reference - Herbert Schildt\n2. Effective Java - Joshua Bloch",
+                        fileUrl: "https://example.com/advanced-programming-notes.pdf"
+                    }
+                ];
+
+                for (const material of materials) {
+                    await db.collection('materials').add({
+                        ...material,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('materialsStatus', `Successfully added ${materials.length} sample materials!`, 'success');
+            } catch (error) {
+                showStatus('materialsStatus', 'Error adding materials: ' + error.message, 'error');
+            }
+        }
+
+        async function addSampleNotices() {
+            try {
+                const notices = [
+                    {
+                        title: "Semester Examination Schedule Released",
+                        date: "2024-01-15",
+                        description: "The semester examination schedule for all courses has been released. Students are advised to check their respective timetables and prepare accordingly. Admit cards will be available from January 20th.",
+                        courses: ["Bachelor of Computer Applications (BCA)", "Master of Computer Applications (MCA)"],
+                        attachment: "https://example.com/exam-schedule.pdf"
+                    },
+                    {
+                        title: "Workshop on Artificial Intelligence",
+                        date: "2024-01-20",
+                        description: "A two-day workshop on Artificial Intelligence and Machine Learning will be conducted by industry experts. Registration is mandatory for all final year students.",
+                        courses: ["Bachelor of Computer Applications (BCA)", "Master of Computer Applications (MCA)", "Bachelor of Technology (B.Tech) - Computer Science"],
+                        attachment: ""
+                    }
+                ];
+
+                for (const notice of notices) {
+                    await db.collection('notices').add({
+                        ...notice,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('noticesStatus', `Successfully added ${notices.length} sample notices!`, 'success');
+            } catch (error) {
+                showStatus('noticesStatus', 'Error adding notices: ' + error.message, 'error');
+            }
+        }
+
+        async function addSampleFees() {
+            try {
+                const fees = [
+                    {
+                        course: "Bachelor of Computer Applications (BCA)",
+                        admissionFee: 5000,
+                        semwiseFee: "Semester 1: ₹22,500\nSemester 2: ₹22,500\nSemester 3: ₹22,500\nSemester 4: ₹22,500\nSemester 5: ₹22,500\nSemester 6: ₹22,500",
+                        hostelFee: 25000,
+                        busFee: 8000,
+                        scholarshipInfo: "Merit scholarships available for top 10% students. Government scholarships as per eligibility.",
+                        feePaymentLink: "https://example.com/bca-fee-payment"
+                    },
+                    {
+                        course: "Master of Computer Applications (MCA)",
+                        admissionFee: 7500,
+                        semwiseFee: "Semester 1: ₹32,500\nSemester 2: ₹32,500\nSemester 3: ₹32,500\nSemester 4: ₹32,500",
+                        hostelFee: 30000,
+                        busFee: 10000,
+                        scholarshipInfo: "Research assistantships available. Industry-sponsored scholarships for meritorious students.",
+                        feePaymentLink: "https://example.com/mca-fee-payment"
+                    }
+                ];
+
+                for (const fee of fees) {
+                    await db.collection('fees').add({
+                        ...fee,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('feesStatus', `Successfully added ${fees.length} sample fee structures!`, 'success');
+            } catch (error) {
+                showStatus('feesStatus', 'Error adding fees: ' + error.message, 'error');
+            }
+        }
+
+        async function addSampleFaculty() {
+            try {
+                const facultyDepts = [
+                    {
+                        department: "Computer Science",
+                        hodName: "Dr. Rajesh Kumar",
+                        facultyList: [
+                            {
+                                name: "Dr. Rajesh Kumar",
+                                subject: "Data Structures & Algorithms",
+                                email: "rajesh.kumar@college.edu",
+                                phone: "+91-9876543210",
+                                qualification: "Ph.D. in Computer Science"
+                            },
+                            {
+                                name: "Prof. Priya Sharma",
+                                subject: "Programming Languages",
+                                email: "priya.sharma@college.edu",
+                                phone: "+91-9876543211",
+                                qualification: "M.Tech in Computer Science"
+                            },
+                            {
+                                name: "Dr. Amit Singh",
+                                subject: "Database Management",
+                                email: "amit.singh@college.edu",
+                                phone: "+91-9876543212",
+                                qualification: "Ph.D. in Information Technology"
+                            }
+                        ]
+                    },
+                    {
+                        department: "Engineering",
+                        hodName: "Dr. Suresh Patel",
+                        facultyList: [
+                            {
+                                name: "Dr. Suresh Patel",
+                                subject: "Software Engineering",
+                                email: "suresh.patel@college.edu",
+                                phone: "+91-9876543213",
+                                qualification: "Ph.D. in Software Engineering"
+                            },
+                            {
+                                name: "Prof. Neha Gupta",
+                                subject: "Computer Networks",
+                                email: "neha.gupta@college.edu",
+                                phone: "+91-9876543214",
+                                qualification: "M.Tech in Computer Networks"
+                            }
+                        ]
+                    }
+                ];
+
+                for (const dept of facultyDepts) {
+                    await db.collection('faculty').add({
+                        ...dept,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('facultyStatus', `Successfully added ${facultyDepts.length} faculty departments!`, 'success');
+            } catch (error) {
+                showStatus('facultyStatus', 'Error adding faculty: ' + error.message, 'error');
+            }
+        }
+
+        async function addCollegeInfo() {
+            try {
+                const collegeData = {
+                    collegeName: "Bhagwant Institute of Technology",
+                    collegeType: "Private",
+                    location: "Muzaffarnagar, Uttar Pradesh, India",
+                    establishmentYear: 2005,
+                    contactEmail: "info@bit.edu.in",
+                    contactPhone: "+91-131-2345678",
+                    affiliatedUniversity: "Dr. A.P.J. Abdul Kalam Technical University",
+                    director: "Dr. Bhagwant Singh",
+                    dean: "Dr. Sunita Sharma",
+                    asstDirector: "Prof. Vikram Gupta",
+                    facilities: "Modern Computer Labs, Library with 10,000+ books, Wi-Fi Campus, Sports Complex, Cafeteria, Auditorium, Placement Cell, Research Centers",
+                    eventsClubs: "Technical Fest (TechnoVision), Cultural Fest (Sanskriti), Coding Club, Robotics Club, Literary Society, Sports Club, Photography Club",
+                    googleMapsLocation: "https://maps.google.com/example-location",
+                    hostelInfo: "Separate hostels for boys and girls with 24/7 security, mess facility, Wi-Fi, recreation room, and study halls. Capacity: 200 students each.",
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection('college').doc('info').set(collegeData);
+                showStatus('collegeStatus', 'Successfully added college information!', 'success');
+            } catch (error) {
+                showStatus('collegeStatus', 'Error adding college info: ' + error.message, 'error');
+            }
+        }
+
+        async function addSampleStudents() {
+            try {
+                const students = [
+                    {
+                        rollNo: "BCA2021001",
+                        enrollmentNo: "21BCA001",
+                        name: "Rahul Sharma",
+                        fatherName: "Suresh Sharma",
+                        motherName: "Sunita Sharma",
+                        phone: "+91-9876543220",
+                        email: "rahul.sharma@student.bit.edu",
+                        course: "Bachelor of Computer Applications (BCA)",
+                        branch: "Computer Science",
+                        year: "3rd Year",
+                        attendance: 85,
+                        feePaid: 67500,
+                        feeDue: 0,
+                        address: "123 Main Street, Muzaffarnagar, UP"
+                    },
+                    {
+                        rollNo: "MCA2022001",
+                        enrollmentNo: "22MCA001",
+                        name: "Priya Gupta",
+                        fatherName: "Rajesh Gupta",
+                        motherName: "Meera Gupta",
+                        phone: "+91-9876543221",
+                        email: "priya.gupta@student.bit.edu",
+                        course: "Master of Computer Applications (MCA)",
+                        branch: "Computer Applications",
+                        year: "2nd Year",
+                        attendance: 92,
+                        feePaid: 65000,
+                        feeDue: 0,
+                        address: "456 Park Avenue, Saharanpur, UP"
+                    }
+                ];
+
+                for (const student of students) {
+                    await db.collection('students').doc(student.rollNo).set({
+                        ...student,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                showStatus('studentsStatus', `Successfully added ${students.length} sample students!`, 'success');
+            } catch (error) {
+                showStatus('studentsStatus', 'Error adding students: ' + error.message, 'error');
+            }
+        }
+
+        async function addAllSampleData() {
+            showStatus('allDataStatus', 'Adding all sample data... Please wait.', 'info');
+
+            try {
+                await addSampleCourses();
+                await addSampleTimetables();
+                await addSampleMaterials();
+                await addSampleNotices();
+                await addSampleFees();
+                await addSampleFaculty();
+                await addCollegeInfo();
+                await addSampleStudents();
+
+                showStatus('allDataStatus', 'Successfully added all sample data! You can now test the admin panel.', 'success');
+            } catch (error) {
+                showStatus('allDataStatus', 'Error adding sample data: ' + error.message, 'error');
+            }
+        }
+
+        async function clearAllData() {
+            if (!confirm('Are you sure you want to delete ALL data? This action cannot be undone!')) {
+                return;
+            }
+
+            if (!confirm('This will permanently delete all courses, timetables, materials, notices, fees, faculty, college info, and students. Are you absolutely sure?')) {
+                return;
+            }
+
+            showStatus('allDataStatus', 'Clearing all data... Please wait.', 'info');
+
+            try {
+                const collections = ['courses', 'timetables', 'materials', 'notices', 'fees', 'faculty', 'students'];
+
+                for (const collectionName of collections) {
+                    const snapshot = await db.collection(collectionName).get();
+                    const batch = db.batch();
+
+                    snapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+
+                    await batch.commit();
+                }
+
+                // Clear college info
+                await db.collection('college').doc('info').delete();
+
+                showStatus('allDataStatus', 'Successfully cleared all data from the database.', 'success');
+            } catch (error) {
+                showStatus('allDataStatus', 'Error clearing data: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initFirebase);
+    </script>
+</body>
+</html>
