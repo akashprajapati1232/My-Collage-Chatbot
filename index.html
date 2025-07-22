@@ -13,7 +13,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/chatbot-library-theme.css">
 
     <!-- Firebase will be initialized by firebase-service.js -->
 </head>
@@ -128,15 +139,106 @@
         </footer>
     </div>
 
-    <script src="firebase-config.js"></script>
-    <script src="firebase-service.js"></script>
-    <script src="auth.js"></script>
-    <script src="script.js"></script>
+    <!-- Login Popup Modals -->
+    <div id="loginModal" class="login-modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeLoginPopup()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Login</h2>
+                <button class="modal-close" onclick="closeLoginPopup()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Student Login Form -->
+                <div id="studentLoginForm" class="login-form-container" style="display: none;">
+                    <div class="login-header">
+                        <div class="bot-avatar">🤖</div>
+                        <h3>Student Portal</h3>
+                        <p>Bhagwant Institute of Technology</p>
+                    </div>
+                    <form id="popupStudentForm">
+                        <div class="form-group">
+                            <label for="popupStudentEmail">Gmail Address</label>
+                            <input type="email" id="popupStudentEmail" placeholder="Enter your Gmail address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="popupStudentDob">Date of Birth</label>
+                            <input type="date" id="popupStudentDob" required>
+                        </div>
+                        <button type="submit" class="login-btn">
+                            <span class="btn-text">Student Sign In</span>
+                            <div class="btn-loader" style="display: none;">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+                    </form>
+                    <div class="login-footer">
+                        <p>Need admin access? <a href="#" onclick="switchToAdminLogin()">Admin Login</a></p>
+                    </div>
+                </div>
+
+                <!-- Admin Login Form -->
+                <div id="adminLoginForm" class="login-form-container" style="display: none;">
+                    <div class="login-header">
+                        <div class="bot-avatar">🛡️</div>
+                        <h3>Admin Panel</h3>
+                        <p>Authorized Personnel Only</p>
+                    </div>
+                    <form id="popupAdminForm">
+                        <div class="form-group">
+                            <label for="popupAdminEmail">Email Address</label>
+                            <input type="email" id="popupAdminEmail" placeholder="Enter admin email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="popupAdminPassword">Password</label>
+                            <input type="password" id="popupAdminPassword" placeholder="Enter password" required>
+                        </div>
+                        <button type="submit" class="login-btn admin-btn">
+                            <span class="btn-text">Admin Sign In</span>
+                            <div class="btn-loader" style="display: none;">
+                                <div class="spinner"></div>
+                            </div>
+                        </button>
+                    </form>
+                    <div class="login-footer">
+                        <p>Student access? <a href="#" onclick="switchToStudentLogin()">Student Login</a></p>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="popupErrorMessage" class="error-message" style="display: none;">
+                    <span class="error-text" id="popupErrorText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <script src="admin/js/firebase-config.js"></script>
+    <script src="admin/js/firebase-service.js"></script>
+    <script src="admin/js/auth.js"></script>
+    <script src="js/script.js"></script>
     <script>
         // Initialize public chatbot (no authentication required)
         // Authentication is only needed for sensitive queries
         document.addEventListener('DOMContentLoaded', () => {
             initializePublicChatbot();
+
+            // Ensure popup functions are available globally
+            if (typeof openLoginPopup === 'function') {
+                window.openLoginPopup = openLoginPopup;
+                window.closeLoginPopup = closeLoginPopup;
+                window.switchToAdminLogin = switchToAdminLogin;
+                window.switchToStudentLogin = switchToStudentLogin;
+            }
         });
     </script>
 </body>

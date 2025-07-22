@@ -47,7 +47,10 @@ ChatBot/
 │   │   └── library-theme.css      # Third-party library themes
 │   ├── js/
 │   │   ├── admin-panel.js         # Main admin panel functionality
-│   │   └── courses.js             # Course management functionality
+│   │   ├── courses.js             # Course management functionality
+│   │   ├── auth.js                # Authentication system
+│   │   ├── firebase-config.js     # Firebase configuration
+│   │   └── firebase-service.js    # Firebase service layer
 │   ├── admin-panel.html           # Main admin dashboard
 │   ├── courses.html               # Course management page
 │   ├── all-courses.html           # View all courses page
@@ -66,8 +69,6 @@ ChatBot/
 ├── css/                           # Chatbot styles
 │   └── style.css
 ├── js/                            # Chatbot JavaScript
-│   ├── firebase-config.js         # Firebase configuration
-│   ├── firebase-service.js        # Firebase service layer
 │   └── script.js                  # Main chatbot functionality
 ├── index.html                     # Main chatbot interface
 └── README.md                      # This file

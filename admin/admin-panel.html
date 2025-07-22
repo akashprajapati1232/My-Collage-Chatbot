@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - BitBot | Bhagwant Institute of Technology</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/admin-panel.css">
+    <link rel="stylesheet" href="css/library-theme.css">
+</head>
+<body class="light-theme">
+    <div class="admin-container">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="admin-panel.html" class="brand" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                    <span class="brand-icon">🛡️</span>
+                    <span class="brand-text">BitBot Admin</span>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-avatar" id="userMenuToggle" aria-label="User Menu">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <button class="menu-btn active" data-section="dashboard">
+                            <i class="fas fa-chart-pie"></i>
+                            <span class="menu-text">Dashboard</span>
+                        </button>
+                    </li>
+                    <li class="menu-item">
+                        <a href="courses.html" class="menu-link">
+                            <i class="fas fa-book"></i>
+                            <span class="menu-text">Courses</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="timetables.html" class="menu-link">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="menu-text">Time Tables</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="syllabus.html" class="menu-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="menu-text">Syllabus</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="notices.html" class="menu-link">
+                            <i class="fas fa-bullhorn"></i>
+                            <span class="menu-text">Notices</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="fee-structure.html" class="menu-link">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span class="menu-text">Fee Structure</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="faculty.html" class="menu-link">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span class="menu-text">Faculty</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="college-info.html" class="menu-link">
+                            <i class="fas fa-university"></i>
+                            <span class="menu-text">College Info</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="students.html" class="menu-link">
+                            <i class="fas fa-users"></i>
+                            <span class="menu-text">Students</span>
+                        </a>
+                    </li>
+
+
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading...</span>
+            </div>
+
+
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title">Dashboard Overview</h1>
+                    <div class="section-actions">
+                        <button class="btn btn-outline" id="refreshDashboard">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stat-icon courses">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalCourses">0</h3>
+                            <p class="stat-label">Total Courses</p>
+                            <div class="stat-change positive" id="coursesChange">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+0 this month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stat-icon students">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalStudents">0</h3>
+                            <p class="stat-label">Total Students</p>
+                            <div class="stat-change positive" id="studentsChange">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+0 this month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stat-icon faculty">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalFaculty">0</h3>
+                            <p class="stat-label">Faculty Members</p>
+                            <div class="stat-change positive" id="facultyChange">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+0 this month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="stat-icon notices">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalNotices">0</h3>
+                            <p class="stat-label">Active Notices</p>
+                            <div class="stat-change positive" id="noticesChange">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+0 this month</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-section" data-aos="fade-up" data-aos-delay="500">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                Quick Actions
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions-grid">
+                                <a href="courses.html" class="action-card">
+                                    <div class="action-icon courses">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Add Course</span>
+                                        <span class="action-desc">Create new course</span>
+                                    </div>
+                                </a>
+
+                                <a href="students.html" class="action-card">
+                                    <div class="action-icon students">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Add Student</span>
+                                        <span class="action-desc">Register new student</span>
+                                    </div>
+                                </a>
+
+                                <a href="notices.html" class="action-card">
+                                    <div class="action-icon notices">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Post Notice</span>
+                                        <span class="action-desc">Create announcement</span>
+                                    </div>
+                                </a>
+
+                                <a href="timetables.html" class="action-card">
+                                    <div class="action-icon timetables">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </div>
+                                    <div class="action-content">
+                                        <span class="action-title">Add Timetable</span>
+                                        <span class="action-desc">Schedule classes</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+
+
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer"></div>
+
+    <!-- Password Change Modal -->
+    <div class="modal-overlay" id="passwordModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🔐 Change Password</h3>
+                <button class="modal-close" id="closePasswordModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordChangeForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password *</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password *</label>
+                        <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                        <small>Password must be at least 6 characters long</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirm New Password *</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                    </div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelPasswordChange">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePasswordChange">Change Password</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="confirmCancel">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmOk">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-service.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin-panel.js"></script>
+    <script>
+        // Wait for DOM and Firebase service to be ready
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Admin panel DOM loaded, checking authentication...');
+
+            // Wait a bit for Firebase service to be fully initialized
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Initialize the admin panel (singleton pattern)
+            if (!AdminPanel.getInstance()) {
+                window.adminPanel = new AdminPanel();
+                window.adminPanel.currentPage = 'dashboard';
+            } else {
+                window.adminPanel = AdminPanel.getInstance();
+                console.log('Using existing AdminPanel instance');
+            }
+
+            // Protect this page and initialize logout
+            if (typeof protectPage === 'function') {
+                console.log('Calling protectPage...');
+                await protectPage();
+                console.log('protectPage completed');
+            } else {
+                console.error('protectPage function not found');
+            }
+        });
+    </script>
+</body>
+</html>

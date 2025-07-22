@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Setup - BitBot</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="../css/login.css">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         .setup-container {
             max-width: 600px;
@@ -142,7 +148,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 20px;">
-                <a href="admin-login.html" class="btn btn-primary">← Back to Admin Login</a>
+                <a href="../index.html" class="btn btn-primary">← Back to Home</a>
             </div>
         </div>
     </div>
@@ -253,10 +259,10 @@
                 // Reset form
                 document.getElementById('adminForm').reset();
 
-                // Add login button
+                // Add home button
                 setTimeout(() => {
                     const messageDiv = document.getElementById('adminMessage');
-                    messageDiv.innerHTML += '<br><a href="admin-login.html" class="btn btn-primary" style="margin-top: 10px; text-decoration: none; display: inline-block; padding: 8px 16px; background: #007bff; color: white; border-radius: 4px;">Go to Admin Login</a>';
+                    messageDiv.innerHTML += '<br><a href="../index.html" class="btn btn-primary" style="margin-top: 10px; text-decoration: none; display: inline-block; padding: 8px 16px; background: #007bff; color: white; border-radius: 4px;">Go to Home</a>';
                 }, 1000);
 
             } catch (error) {
@@ -264,10 +270,10 @@
 
                 if (error.code === 'auth/email-already-in-use') {
                     showMessage('adminMessage', 'Email already in use. Please use a different email or login with existing account.', 'error');
-                    // Add login button for existing users
+                    // Add home button for existing users
                     setTimeout(() => {
                         const messageDiv = document.getElementById('adminMessage');
-                        messageDiv.innerHTML += '<br><a href="admin-login.html" class="btn btn-primary" style="margin-top: 10px; text-decoration: none; display: inline-block; padding: 8px 16px; background: #007bff; color: white; border-radius: 4px;">Go to Admin Login</a>';
+                        messageDiv.innerHTML += '<br><a href="../index.html" class="btn btn-primary" style="margin-top: 10px; text-decoration: none; display: inline-block; padding: 8px 16px; background: #007bff; color: white; border-radius: 4px;">Go to Home</a>';
                     }, 1000);
                 } else if (error.code === 'auth/weak-password') {
                     showMessage('adminMessage', 'Password is too weak. Please use a stronger password.', 'error');
@@ -335,68 +341,217 @@
         async function changePassword() {
             const currentUser = firebaseService.getCurrentUser();
             if (!currentUser) {
-                showMessage('managementMessage', 'You must be logged in to change password', 'error');
+                showToast('You must be logged in to change password', 'error');
                 return;
             }
 
             // Ask for current password first for security
-            const currentPassword = prompt('Enter your current password for verification:');
-            if (!currentPassword) {
-                showMessage('managementMessage', 'Current password is required for security', 'error');
-                return;
-            }
+            const { value: currentPassword } = await Swal.fire({
+                title: 'Current Password',
+                text: 'Enter your current password for verification:',
+                input: 'password',
+                inputPlaceholder: 'Current password',
+                showCancelButton: true,
+                confirmButtonText: 'Continue',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Current password is required for security';
+                    }
+                }
+            });
 
-            const newPassword = prompt('Enter new admin password:');
+            if (!currentPassword) return;
+
+            const { value: newPassword } = await Swal.fire({
+                title: 'New Password',
+                text: 'Enter new admin password:',
+                input: 'password',
+                inputPlaceholder: 'New password (min 8 characters)',
+                showCancelButton: true,
+                confirmButtonText: 'Continue',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'New password is required';
+                    }
+                    if (value.length < 8) {
+                        return 'Password must be at least 8 characters long';
+                    }
+                }
+            });
+
             if (!newPassword) return;
 
-            if (newPassword.length < 8) {
-                showMessage('managementMessage', 'Password must be at least 8 characters long', 'error');
-                return;
-            }
+            const { value: confirmPassword } = await Swal.fire({
+                title: 'Confirm Password',
+                text: 'Confirm new password:',
+                input: 'password',
+                inputPlaceholder: 'Confirm new password',
+                showCancelButton: true,
+                confirmButtonText: 'Change Password',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Password confirmation is required';
+                    }
+                    if (value !== newPassword) {
+                        return 'Passwords do not match';
+                    }
+                }
+            });
 
-            const confirmPassword = prompt('Confirm new password:');
-            if (newPassword !== confirmPassword) {
-                showMessage('managementMessage', 'Passwords do not match', 'error');
-                return;
-            }
+            if (!confirmPassword) return;
 
             try {
-                showMessage('managementMessage', 'Changing password...', 'info');
+                showToast('Changing password...', 'info');
                 // Update password in Firebase Auth with current password for re-authentication
                 await firebaseService.updatePassword(newPassword, currentPassword);
-                showMessage('managementMessage', 'Password changed successfully in Firebase!', 'success');
+                showToast('Password changed successfully in Firebase!', 'success');
             } catch (error) {
                 console.error('Error changing password:', error);
-                showMessage('managementMessage', `Failed to change password: ${error.message}`, 'error');
+                showToast(`Failed to change password: ${error.message}`, 'error');
             }
         }
 
         async function resetAdmin() {
-            if (confirm('Are you sure you want to sign out? You will need to login again.')) {
+            const result = await Swal.fire({
+                title: 'Sign Out?',
+                text: 'Are you sure you want to sign out? You will need to login again.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#000',
+                cancelButtonColor: '#666',
+                confirmButtonText: 'Yes, sign out',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
                 try {
                     await firebaseService.signOut();
-                    showMessage('managementMessage', 'Signed out successfully!', 'success');
+                    showToast('Signed out successfully!', 'success');
 
                     setTimeout(() => {
-                        window.location.href = 'admin-login.html';
+                        window.location.href = '../index.html';
                     }, 1000);
                 } catch (error) {
                     console.error('Error signing out:', error);
-                    showMessage('managementMessage', `Failed to sign out: ${error.message}`, 'error');
+                    showToast(`Failed to sign out: ${error.message}`, 'error');
                 }
             }
         }
 
-        function showMessage(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.className = `message ${type}`;
-            element.style.display = 'block';
-            
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 5000);
+        // Message queue for setup page
+        let setupMessageQueue = [];
+        let setupIsShowingMessage = false;
+        let setupCurrentToast = null;
+
+        function showToast(message, type = 'success') {
+            // Add message to queue
+            setupMessageQueue.push({ message, type });
+
+            // Process queue if not already showing a message
+            if (!setupIsShowingMessage) {
+                processSetupMessageQueue();
+            }
+        }
+
+        function processSetupMessageQueue() {
+            // Clear any existing toast first
+            if (setupCurrentToast) {
+                try {
+                    setupCurrentToast.hideToast();
+                } catch (e) {
+                    // Ignore errors if toast is already hidden
+                }
+                setupCurrentToast = null;
+            }
+
+            // Remove any existing toasts from DOM
+            const existingToasts = document.querySelectorAll('.toastify');
+            existingToasts.forEach(toast => {
+                try {
+                    toast.remove();
+                } catch (e) {
+                    // Ignore errors
+                }
+            });
+
+            if (setupMessageQueue.length === 0) {
+                setupIsShowingMessage = false;
+                return;
+            }
+
+            setupIsShowingMessage = true;
+            const { message, type } = setupMessageQueue.shift();
+
+            let backgroundColor;
+            let icon;
+
+            switch(type) {
+                case 'success':
+                    backgroundColor = 'linear-gradient(to right, #00b09b, #96c93d)';
+                    icon = '✅';
+                    break;
+                case 'error':
+                    backgroundColor = 'linear-gradient(to right, #ff5f6d, #ffc371)';
+                    icon = '❌';
+                    break;
+                case 'warning':
+                    backgroundColor = 'linear-gradient(to right, #f093fb, #f5576c)';
+                    icon = '⚠️';
+                    break;
+                case 'info':
+                    backgroundColor = 'linear-gradient(to right, #4facfe, #00f2fe)';
+                    icon = 'ℹ️';
+                    break;
+                default:
+                    backgroundColor = 'linear-gradient(to right, #667eea, #764ba2)';
+                    icon = '📝';
+            }
+
+            setupCurrentToast = Toastify({
+                text: `${icon} ${message}`,
+                duration: 4000,
+                close: true,
+                gravity: "top",
+                position: "center",
+                stopOnFocus: true,
+                style: {
+                    background: backgroundColor,
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                    padding: "12px 40px 12px 16px"
+                },
+                callback: () => {
+                    // When this message finishes, process the next one
+                    setupCurrentToast = null;
+                    setTimeout(() => {
+                        processSetupMessageQueue();
+                    }, 300); // Small delay between messages
+                },
+                onClick: () => {
+                    // When clicked, immediately process next message
+                    if (setupCurrentToast) {
+                        setupCurrentToast.hideToast();
+                        setupCurrentToast = null;
+                    }
+                    setTimeout(() => {
+                        processSetupMessageQueue();
+                    }, 100);
+                }
+            });
+
+            setupCurrentToast.showToast();
         }
     </script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 </body>
 </html>

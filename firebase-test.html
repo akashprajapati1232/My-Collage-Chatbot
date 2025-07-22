@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Connection Test</h1>
+    <div id="status"></div>
+    <button onclick="testConnection()">Test Firebase Connection</button>
+    <button onclick="testDashboard()">Test Dashboard Data</button>
+    <div id="results"></div>
+
+    <script src="admin/js/firebase-config.js"></script>
+    <script src="admin/js/firebase-service.js"></script>
+    
+    <script>
+        function showStatus(message, type = 'info') {
+            document.getElementById('status').innerHTML = `<div class="${type} status">${message}</div>`;
+        }
+
+        function addResult(message) {
+            document.getElementById('results').innerHTML += `<div class="info status">${message}</div>`;
+        }
+
+        async function testConnection() {
+            showStatus('Testing Firebase connection...', 'info');
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                if (!window.firebaseService) {
+                    throw new Error('Firebase service not available');
+                }
+
+                await window.firebaseService.initialize();
+
+                if (window.firebaseService.isReady()) {
+                    showStatus('✅ Firebase connection successful!', 'success');
+                } else {
+                    throw new Error('Firebase service failed to initialize');
+                }
+            } catch (error) {
+                showStatus('❌ Firebase connection failed: ' + error.message, 'error');
+            }
+        }
+
+        async function testDashboard() {
+            showStatus('Testing dashboard data...', 'info');
+            try {
+                if (!window.firebaseService?.isReady()) {
+                    throw new Error('Firebase not ready');
+                }
+
+                const collections = ['courses', 'students', 'faculty', 'notices'];
+                for (const collection of collections) {
+                    try {
+                        const snapshot = await window.firebaseService.firestore.getDocs(
+                            window.firebaseService.firestore.collection(window.firebaseService.db, collection)
+                        );
+                        addResult(`${collection}: ${snapshot.size} documents`);
+                    } catch (error) {
+                        addResult(`${collection}: Error - ${error.message}`);
+                    }
+                }
+                showStatus('✅ Dashboard test completed!', 'success');
+            } catch (error) {
+                showStatus('❌ Dashboard test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Path Test - BitBot</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .test-item { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 3px; }
+        .test-link { display: inline-block; margin: 5px; padding: 8px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+        .test-link:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔧 BitBot Path Reference Test</h1>
+    
+    <div class="test-section">
+        <h2>Root Level Pages</h2>
+        <div class="test-item">
+            <strong>Main Pages:</strong><br>
+            <a href="index.html" class="test-link">index.html</a>
+
+            <a href="student-dashboard.html" class="test-link">student-dashboard.html</a>
+            <a href="student-management.html" class="test-link">student-management.html</a>
+            <a href="firebase-test.html" class="test-link">firebase-test.html</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Admin Pages</h2>
+        <div class="test-item">
+            <strong>Admin Directory:</strong><br>
+
+            <a href="admin/admin-panel.html" class="test-link">admin-panel.html</a>
+            <a href="admin/admin-setup.html" class="test-link">admin-setup.html</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Resource Files</h2>
+        <div class="test-item">
+            <strong>CSS Files:</strong><br>
+            <a href="css/style.css" class="test-link">style.css</a>
+
+            <a href="admin/css/admin-panel.css" class="test-link">admin-panel.css</a>
+        </div>
+        <div class="test-item">
+            <strong>JavaScript Files:</strong><br>
+            <a href="admin/js/auth.js" class="test-link">auth.js</a>
+            <a href="js/script.js" class="test-link">script.js</a>
+            <a href="admin/js/firebase-config.js" class="test-link">firebase-config.js</a>
+            <a href="admin/js/firebase-service.js" class="test-link">firebase-service.js</a>
+            <a href="admin/js/admin-panel.js" class="test-link">admin-panel.js</a>
+        </div>
+        <div class="test-item">
+            <strong>Assets:</strong><br>
+            <a href="assets/favicon.svg" class="test-link">favicon.svg</a>
+            <a href="assets/favicon-large.svg" class="test-link">favicon-large.svg</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Path Reference Tests</h2>
+        <div id="test-results">
+            <p>Click the button below to test all path references:</p>
+            <button onclick="testAllPaths()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🧪 Test All Paths
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function testAllPaths() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<h3>Testing paths...</h3>';
+            
+            const paths = [
+                // CSS files
+                'css/style.css',
+
+                'admin/css/admin-panel.css',
+                // JS files
+                'admin/js/auth.js',
+                'js/script.js',
+                'admin/js/firebase-config.js',
+                'admin/js/firebase-service.js',
+                'admin/js/admin-panel.js',
+                // Assets
+                'assets/favicon.svg',
+                'assets/favicon-large.svg'
+            ];
+            
+            let results = '<h3>Path Test Results:</h3>';
+            
+            for (const path of paths) {
+                try {
+                    const response = await fetch(path);
+                    const status = response.ok ? 'success' : 'error';
+                    const statusText = response.ok ? '✅ OK' : `❌ ${response.status}`;
+                    results += `<div class="test-item ${status}"><strong>${path}:</strong> ${statusText}</div>`;
+                } catch (error) {
+                    results += `<div class="test-item error"><strong>${path}:</strong> ❌ Error: ${error.message}</div>`;
+                }
+            }
+            
+            resultsDiv.innerHTML = results;
+        }
+    </script>
+</body>
+</html>

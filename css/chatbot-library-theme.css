@@ -1,0 +1,279 @@
+/* ===== CHATBOT LIBRARY THEME INTEGRATION =====
+   Custom styling for libraries in the chatbot interface
+   to match the monochrome black & white theme
+*/
+
+/* ===== TABULATOR IN CHAT ===== */
+.chat-messages .tabulator {
+    background-color: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin: 10px 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+.chat-messages .tabulator-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #000 !important;
+}
+
+.chat-messages .tabulator-col-title {
+    color: #000 !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+
+.chat-messages .tabulator-row {
+    background-color: #fff !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.chat-messages .tabulator-row:hover {
+    background-color: #f8f9fa !important;
+}
+
+.chat-messages .tabulator-cell {
+    color: #333 !important;
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    border-right: 1px solid #f0f0f0 !important;
+}
+
+/* ===== TOASTIFY FOR CHATBOT ===== */
+.toastify.chatbot-toast {
+    font-family: 'Poppins', sans-serif !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    z-index: 10000 !important;
+}
+
+/* ===== SWEETALERT2 FOR CHATBOT ===== */
+.swal-popup-chatbot {
+    font-family: 'Poppins', sans-serif !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+    background: #fff !important;
+    color: #333 !important;
+    z-index: 10000 !important;
+}
+
+.swal-title-chatbot {
+    color: #000 !important;
+    font-weight: 600 !important;
+    font-size: 20px !important;
+}
+
+.swal-content-chatbot {
+    color: #555 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
+/* ===== DARK THEME FOR CHATBOT ===== */
+.dark-theme .chat-messages .tabulator {
+    background-color: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+.dark-theme .chat-messages .tabulator-header {
+    background-color: #2d2d2d !important;
+    border-bottom-color: #fff !important;
+}
+
+.dark-theme .chat-messages .tabulator-col-title {
+    color: #fff !important;
+}
+
+.dark-theme .chat-messages .tabulator-row {
+    background-color: #1a1a1a !important;
+    border-bottom-color: #333 !important;
+}
+
+.dark-theme .chat-messages .tabulator-row:hover {
+    background-color: #2d2d2d !important;
+}
+
+.dark-theme .chat-messages .tabulator-cell {
+    color: #e0e0e0 !important;
+    border-right-color: #333 !important;
+}
+
+.dark-theme .swal-popup-chatbot {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.dark-theme .swal-title-chatbot {
+    color: #fff !important;
+}
+
+.dark-theme .swal-content-chatbot {
+    color: #ccc !important;
+}
+
+/* ===== RESPONSIVE DESIGN FOR CHATBOT ===== */
+@media (max-width: 768px) {
+    .chat-messages .tabulator {
+        font-size: 10px !important;
+    }
+    
+    .chat-messages .tabulator-cell {
+        padding: 4px 6px !important;
+    }
+    
+    .swal-popup-chatbot {
+        width: 95% !important;
+        margin: 0 auto !important;
+    }
+    
+    .toastify.chatbot-toast {
+        max-width: 95% !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* ===== CHAT MESSAGE INTEGRATION ===== */
+.message-bubble .tabulator {
+    margin: 10px 0 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.bot-message .tabulator {
+    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%) !important;
+}
+
+.dark-theme .bot-message .tabulator {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
+}
+
+/* ===== LOADING STATES ===== */
+.tabulator-loading {
+    background-color: rgba(255,255,255,0.9) !important;
+}
+
+.dark-theme .tabulator-loading {
+    background-color: rgba(26,26,26,0.9) !important;
+}
+
+.tabulator-loader {
+    border: 2px solid #f3f3f3 !important;
+    border-top: 2px solid #000 !important;
+}
+
+.dark-theme .tabulator-loader {
+    border: 2px solid #333 !important;
+    border-top: 2px solid #fff !important;
+}
+
+/* ===== CUSTOM ANIMATIONS ===== */
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toastify.chatbot-toast {
+    animation: slideInFromRight 0.3s ease-out !important;
+}
+
+.swal-popup-chatbot {
+    animation: fadeInScale 0.3s ease-out !important;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+.tabulator:focus-within {
+    outline: 2px solid #000 !important;
+    outline-offset: 2px !important;
+}
+
+.dark-theme .tabulator:focus-within {
+    outline-color: #fff !important;
+}
+
+.swal2-popup:focus {
+    outline: none !important;
+}
+
+.toastify:focus {
+    outline: 2px solid #000 !important;
+    outline-offset: 2px !important;
+}
+
+.dark-theme .toastify:focus {
+    outline-color: #fff !important;
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+    .tabulator {
+        border: 2px solid #000 !important;
+    }
+    
+    .tabulator-header {
+        background-color: #000 !important;
+        color: #fff !important;
+    }
+    
+    .tabulator-col-title {
+        color: #fff !important;
+    }
+    
+    .tabulator-row {
+        border-bottom: 1px solid #000 !important;
+    }
+    
+    .tabulator-cell {
+        color: #000 !important;
+    }
+    
+    .swal2-popup {
+        border: 2px solid #000 !important;
+    }
+    
+    .toastify {
+        border: 2px solid #000 !important;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .toastify,
+    .swal2-container {
+        display: none !important;
+    }
+    
+    .tabulator {
+        border: 1px solid #000 !important;
+        background: #fff !important;
+    }
+    
+    .tabulator-header {
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    .tabulator-cell {
+        color: #000 !important;
+    }
+}

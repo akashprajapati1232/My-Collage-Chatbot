@@ -1,0 +1,474 @@
+/* ===== LIBRARY THEME INTEGRATION =====
+   Custom styling for Tabulator, Toastify, and SweetAlert2
+   to match the monochrome black & white admin panel theme
+*/
+
+/* ===== TABULATOR STYLING ===== */
+.tabulator {
+    background-color: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.tabulator-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #000 !important;
+}
+
+.tabulator-col {
+    background-color: #f8f9fa !important;
+    border-right: 1px solid #e0e0e0 !important;
+}
+
+.tabulator-col-title {
+    color: #000 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+.tabulator-row {
+    background-color: #fff !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.tabulator-row:hover {
+    background-color: #f8f9fa !important;
+}
+
+.tabulator-row.tabulator-selected {
+    background-color: #e9ecef !important;
+}
+
+.tabulator-cell {
+    color: #333 !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    border-right: 1px solid #f0f0f0 !important;
+}
+
+.tabulator-pagination {
+    background-color: #fff !important;
+    border-top: 1px solid #e0e0e0 !important;
+    padding: 10px !important;
+}
+
+.tabulator-page {
+    background-color: #fff !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+    margin: 0 2px !important;
+    border-radius: 4px !important;
+}
+
+.tabulator-page:hover {
+    background-color: #f8f9fa !important;
+}
+
+.tabulator-page.active {
+    background-color: #000 !important;
+    color: #fff !important;
+    border-color: #000 !important;
+}
+
+.tabulator-header-filter input {
+    background-color: #fff !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+    border-radius: 4px !important;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+}
+
+.tabulator-header-filter select {
+    background-color: #fff !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+    border-radius: 4px !important;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+}
+
+/* ===== TOASTIFY STYLING ===== */
+.toastify {
+    font-family: 'Poppins', sans-serif !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    z-index: 1003 !important;
+    position: fixed !important;
+    top: 80px !important; /* Position below navbar */
+    left: 50% !important; /* Center horizontally */
+    right: auto !important;
+    transform: translateX(-50%) !important; /* Center alignment */
+    margin: 0 !important;
+    max-width: 350px !important; /* Limit width */
+    min-width: 280px !important; /* Minimum width */
+    font-size: 13px !important; /* Smaller font */
+    padding: 12px 40px 12px 16px !important; /* Extra padding on right for close button */
+    line-height: 1.4 !important; /* Better line height */
+    position: relative !important; /* For close button positioning */
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Ensure text content doesn't overlap with close button */
+.toastify .toastify-content,
+.toastify .toast-content {
+    flex: 1 !important;
+    margin-right: 8px !important;
+    word-wrap: break-word !important;
+}
+
+/* Prevent multiple toasts from overlapping - only show one at a time */
+.toastify:not(:first-of-type) {
+    display: none !important;
+}
+
+/* Alternative approach - ensure single toast positioning */
+.toastify.on {
+    position: fixed !important;
+    top: 80px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 1003 !important;
+}
+
+/* Hide any additional toasts that might appear */
+body .toastify:nth-of-type(n+2) {
+    display: none !important;
+}
+
+/* Toastify close button styling */
+.toastify .toast-close {
+    position: absolute !important;
+    top: 50% !important;
+    right: 12px !important;
+    transform: translateY(-50%) !important;
+    background: none !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+}
+
+.toastify .toast-close:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+/* Alternative close button selectors for different Toastify versions */
+.toastify button,
+.toastify .toastify__close,
+.toastify [role="button"] {
+    position: absolute !important;
+    top: 50% !important;
+    right: 12px !important;
+    transform: translateY(-50%) !important;
+    background: none !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+}
+
+.toastify button:hover,
+.toastify .toastify__close:hover,
+.toastify [role="button"]:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+/* Custom toast styles for monochrome theme */
+.toast-success {
+    background: linear-gradient(135deg, #000 0%, #333 100%) !important;
+    color: #fff !important;
+}
+
+.toast-error {
+    background: linear-gradient(135deg, #666 0%, #999 100%) !important;
+    color: #fff !important;
+}
+
+.toast-warning {
+    background: linear-gradient(135deg, #444 0%, #777 100%) !important;
+    color: #fff !important;
+}
+
+/* Mobile responsive toasts */
+@media (max-width: 768px) {
+    .toastify {
+        top: 80px !important; /* Below navbar on mobile */
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        max-width: calc(100vw - 20px) !important;
+        min-width: auto !important;
+        font-size: 12px !important;
+        padding: 10px 35px 10px 14px !important; /* Extra padding on right for close button */
+    }
+
+    .toastify .toast-close,
+    .toastify button,
+    .toastify .toastify__close,
+    .toastify [role="button"] {
+        right: 8px !important;
+        font-size: 14px !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+}
+
+.toast-info {
+    background: linear-gradient(135deg, #222 0%, #555 100%) !important;
+    color: #fff !important;
+}
+
+/* ===== SWEETALERT2 STYLING ===== */
+.swal2-container {
+    z-index: 1006 !important; /* Higher z-index to appear above navbar */
+    padding-top: 20px !important; /* Position at top of screen */
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+}
+
+.swal2-popup {
+    font-family: 'Poppins', sans-serif !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+    background: #fff !important;
+    color: #333 !important;
+}
+
+.swal2-title {
+    color: #000 !important;
+    font-weight: 600 !important;
+    font-size: 24px !important;
+}
+
+.swal2-content {
+    color: #555 !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+}
+
+.swal2-confirm {
+    background-color: #000 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    padding: 10px 24px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #333 !important;
+    transform: translateY(-1px) !important;
+}
+
+.swal2-cancel {
+    background-color: #fff !important;
+    border: 2px solid #ddd !important;
+    color: #666 !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    padding: 10px 24px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-cancel:hover {
+    background-color: #f8f9fa !important;
+    border-color: #000 !important;
+    color: #000 !important;
+    transform: translateY(-1px) !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: #000 !important;
+    color: #000 !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #666 !important;
+    color: #666 !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: #000 !important;
+    color: #000 !important;
+}
+
+.swal2-icon.swal2-info {
+    border-color: #333 !important;
+    color: #333 !important;
+}
+
+/* ===== DARK THEME OVERRIDES ===== */
+.dark-theme .tabulator {
+    background-color: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+.dark-theme .tabulator-header {
+    background-color: #2d2d2d !important;
+    border-bottom-color: #fff !important;
+}
+
+.dark-theme .tabulator-col {
+    background-color: #2d2d2d !important;
+    border-right-color: #444 !important;
+}
+
+.dark-theme .tabulator-col-title {
+    color: #fff !important;
+}
+
+.dark-theme .tabulator-row {
+    background-color: #1a1a1a !important;
+    border-bottom-color: #333 !important;
+}
+
+.dark-theme .tabulator-row:hover {
+    background-color: #2d2d2d !important;
+}
+
+.dark-theme .tabulator-cell {
+    color: #e0e0e0 !important;
+    border-right-color: #333 !important;
+}
+
+.dark-theme .tabulator-pagination {
+    background-color: #1a1a1a !important;
+    border-top-color: #333 !important;
+}
+
+.dark-theme .tabulator-page {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+.dark-theme .tabulator-page:hover {
+    background-color: #404040 !important;
+}
+
+.dark-theme .tabulator-page.active {
+    background-color: #fff !important;
+    color: #000 !important;
+    border-color: #fff !important;
+}
+
+.dark-theme .swal2-popup {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.dark-theme .swal2-title {
+    color: #fff !important;
+}
+
+.dark-theme .swal2-content {
+    color: #ccc !important;
+}
+
+.dark-theme .swal2-confirm {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.dark-theme .swal2-confirm:hover {
+    background-color: #e0e0e0 !important;
+}
+
+.dark-theme .swal2-cancel {
+    background-color: #2d2d2d !important;
+    border-color: #555 !important;
+    color: #ccc !important;
+}
+
+.dark-theme .swal2-cancel:hover {
+    background-color: #404040 !important;
+    border-color: #fff !important;
+    color: #fff !important;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .tabulator {
+        font-size: 12px !important;
+    }
+    
+    .tabulator-cell {
+        padding: 6px 8px !important;
+    }
+    
+    .swal2-popup {
+        width: 90% !important;
+        margin: 0 auto !important;
+    }
+    
+    .toastify {
+        max-width: 90% !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* ===== BUTTON STYLING IN TABLES ===== */
+.tabulator .btn {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+}
+
+.tabulator .btn-sm {
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+}
+
+.tabulator .btn-secondary {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+.tabulator .btn-secondary:hover {
+    background-color: #545b62 !important;
+    transform: translateY(-1px) !important;
+}
+
+.tabulator .btn-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+.tabulator .btn-danger:hover {
+    background-color: #c82333 !important;
+    transform: translateY(-1px) !important;
+}

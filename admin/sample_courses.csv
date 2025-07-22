@@ -1,0 +1,6 @@
+courseName,department,courseAffiliation,duration,totalSeats,feeStructure,hodName,counsellor,otherFee,scholarshipOpportunities,admissionEligibility
+BCA,Computer Applications,AKTU,3 years,60,₹25000,Dr. Ajay Singh,Ms. Urvashi Chaudhary,₹2000 stationary,UP Government Scholarship / Merit-based,12th Pass with 45% marks (PCM/Arts/Commerce)
+B.Tech CSE,Computer Science Engineering,AKTU,4 years,120,₹45000,Dr. Rajesh Kumar,Mr. Amit Sharma,₹5000 lab fee,Merit-based / Industry Scholarships,12th Pass with 60% marks in PCM
+MBA,Management,AKTU,2 years,60,₹35000,Dr. Priya Verma,Ms. Neha Gupta,₹3000 case study materials,Corporate Scholarships,Graduation with 50% marks
+MCA,Computer Applications,AKTU,2 years,30,₹30000,Dr. Suresh Pandey,Mr. Vikash Singh,₹2500 software licenses,Merit-based,BCA/B.Sc with Mathematics
+B.Com,Commerce,CCSU,3 years,80,₹15000,Dr. Meera Agarwal,Ms. Pooja Sharma,,Government Scholarships,12th Pass with 45% marks

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tables Management - BitBot Admin | Bhagwant Institute of Technology</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/admin-panel.css">
+    <link rel="stylesheet" href="css/library-theme.css">
+</head>
+<body class="light-theme">
+    <div class="admin-container">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="admin-panel.html" class="brand" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                    <span class="brand-icon">🛡️</span>
+                    <span class="brand-text">BitBot Admin</span>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-avatar" id="userMenuToggle" aria-label="User Menu">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="admin-panel.html" class="menu-link">
+                            <i class="fas fa-chart-pie"></i>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="courses.html" class="menu-link">
+                            <i class="fas fa-book"></i>
+                            <span class="menu-text">Courses</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="timetables.html" class="menu-link active">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="menu-text">Time Tables</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="syllabus.html" class="menu-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="menu-text">Syllabus</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="notices.html" class="menu-link">
+                            <i class="fas fa-bullhorn"></i>
+                            <span class="menu-text">Notices</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="fee-structure.html" class="menu-link">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span class="menu-text">Fee Structure</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="faculty.html" class="menu-link">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span class="menu-text">Faculty</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="college-info.html" class="menu-link">
+                            <i class="fas fa-university"></i>
+                            <span class="menu-text">College Info</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="students.html" class="menu-link">
+                            <i class="fas fa-users"></i>
+                            <span class="menu-text">Students</span>
+                        </a>
+                    </li>
+
+
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading...</span>
+            </div>
+
+
+
+            <!-- Time Tables Section -->
+            <section id="timetables-section" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title">Time Table Management</h1>
+                    <div class="section-actions">
+                        <button class="btn btn-outline" id="searchTimetables">
+                            <i class="fas fa-search"></i>
+                            Search
+                        </button>
+                        <button class="btn btn-primary" id="addTimetableBtn">
+                            <i class="fas fa-plus"></i>
+                            Add Time Table
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <form id="timetableForm" class="admin-form">
+                        <input type="hidden" id="timetableId" name="timetableId">
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="timetableCourse">Course Name *</label>
+                                <select id="timetableCourse" name="course" required>
+                                    <option value="">Select Course</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="yearSemester">Year/Semester *</label>
+                                <input type="text" id="yearSemester" name="yearSemester" placeholder="e.g., 1st Year, 2nd Semester" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="facultyName">Faculty Name *</label>
+                                <input type="text" id="facultyName" name="facultyName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pdfImageLink">PDF/Image Link</label>
+                                <input type="url" id="pdfImageLink" name="pdfImageLink" placeholder="https://...">
+                            </div>
+                        </div>
+
+                        <div class="timetable-grid">
+                            <h3>Weekly Schedule</h3>
+                            <div class="days-grid">
+                                <div class="day-schedule">
+                                    <h4>Monday</h4>
+                                    <textarea name="monday" placeholder="Enter Monday schedule"></textarea>
+                                </div>
+                                <div class="day-schedule">
+                                    <h4>Tuesday</h4>
+                                    <textarea name="tuesday" placeholder="Enter Tuesday schedule"></textarea>
+                                </div>
+                                <div class="day-schedule">
+                                    <h4>Wednesday</h4>
+                                    <textarea name="wednesday" placeholder="Enter Wednesday schedule"></textarea>
+                                </div>
+                                <div class="day-schedule">
+                                    <h4>Thursday</h4>
+                                    <textarea name="thursday" placeholder="Enter Thursday schedule"></textarea>
+                                </div>
+                                <div class="day-schedule">
+                                    <h4>Friday</h4>
+                                    <textarea name="friday" placeholder="Enter Friday schedule"></textarea>
+                                </div>
+                                <div class="day-schedule">
+                                    <h4>Saturday</h4>
+                                    <textarea name="saturday" placeholder="Enter Saturday schedule"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Time Table</button>
+                            <button type="button" class="btn btn-secondary" id="resetTimetableForm">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="data-list" id="timetablesList">
+                    <!-- Time tables will be loaded here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-service.js"></script>
+
+    <!-- Admin Panel JavaScript -->
+    <script src="js/admin-panel.js"></script>
+    
+    <script>
+        // Initialize the admin panel for timetables page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use singleton pattern to prevent duplicate instances
+            if (!AdminPanel.getInstance()) {
+                window.adminPanel = new AdminPanel();
+                window.adminPanel.currentPage = 'timetables';
+            } else {
+                window.adminPanel = AdminPanel.getInstance();
+                window.adminPanel.currentPage = 'timetables';
+                console.log('Using existing AdminPanel instance for timetables');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -128,53 +128,7 @@ class FirebaseService {
         }
     }
 
-    async createAdmin(email, password, adminData) {
-        await this.initialize();
-        try {
-            const userCredential = await this.firebaseAuth.createUserWithEmailAndPassword(this.auth, email, password);
 
-            // Try to add admin data to Firestore
-            try {
-                await this.firestore.setDoc(this.firestore.doc(this.db, 'admins', userCredential.user.uid), {
-                    uid: userCredential.user.uid,
-                    email: email,
-                    ...adminData,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    role: 'admin'
-                });
-                console.log('Admin data successfully written to Firestore');
-            } catch (firestoreError) {
-                console.warn('Firestore write failed, trying alternative approach:', firestoreError);
-
-                // Alternative: Try to create admin data after signing in
-                try {
-                    // Sign in as the newly created user
-                    await this.firebaseAuth.signInWithEmailAndPassword(this.auth, email, password);
-
-                    // Now try to write admin data
-                    await this.firestore.setDoc(this.firestore.doc(this.db, 'admins', userCredential.user.uid), {
-                        uid: userCredential.user.uid,
-                        email: email,
-                        ...adminData,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        role: 'admin'
-                    });
-                    console.log('Admin data written after sign-in');
-                } catch (secondError) {
-                    console.warn('Second attempt also failed:', secondError);
-                    // User is created but admin data might not be in Firestore
-                    // This is okay - the user can still login and we'll handle it
-                }
-            }
-
-            return userCredential.user;
-        } catch (error) {
-            console.error('Admin creation failed:', error);
-            throw error;
-        }
-    }
 
     async getAdminByUid(uid) {
         await this.initialize();
@@ -236,55 +190,7 @@ class FirebaseService {
         }
     }
 
-    async updatePassword(newPassword) {
-        await this.initialize();
-        const user = this.auth.currentUser;
-        if (!user) {
-            throw new Error('No user is currently signed in');
-        }
 
-        try {
-            await this.firebaseAuth.updatePassword(user, newPassword);
-            return true;
-        } catch (error) {
-            console.error('Error updating password:', error);
-            throw error;
-        }
-    }
-
-    async changePasswordWithReauth(currentPassword, newPassword) {
-        await this.initialize();
-        const user = this.auth.currentUser;
-        if (!user) {
-            throw new Error('No user is currently signed in');
-        }
-
-        try {
-            // Create credential for reauthentication
-            const credential = this.firebaseAuth.EmailAuthProvider.credential(user.email, currentPassword);
-
-            // Reauthenticate user
-            await this.firebaseAuth.reauthenticateWithCredential(user, credential);
-
-            // Update password
-            await this.firebaseAuth.updatePassword(user, newPassword);
-
-            return true;
-        } catch (error) {
-            console.error('Error changing password:', error);
-
-            // Provide more specific error messages
-            if (error.code === 'auth/wrong-password') {
-                throw new Error('Current password is incorrect.');
-            } else if (error.code === 'auth/weak-password') {
-                throw new Error('New password is too weak. Please choose a stronger password.');
-            } else if (error.code === 'auth/requires-recent-login') {
-                throw new Error('Please log out and log back in before changing your password.');
-            } else {
-                throw new Error(error.message || 'Failed to change password. Please try again.');
-            }
-        }
-    }
 
     // Student Management Methods
     async addStudent(studentData) {
@@ -295,7 +201,7 @@ class FirebaseService {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             });
-            
+
             return { id: docRef.id, ...studentData };
         } catch (error) {
             console.error('Error adding student:', error);
@@ -312,12 +218,12 @@ class FirebaseService {
                     this.firestore.orderBy('createdAt', 'desc')
                 )
             );
-            
+
             const students = [];
             querySnapshot.forEach((doc) => {
                 students.push({ id: doc.id, ...doc.data() });
             });
-            
+
             return students;
         } catch (error) {
             console.error('Error getting students:', error);
@@ -333,7 +239,7 @@ class FirebaseService {
                 ...updateData,
                 updatedAt: new Date().toISOString()
             });
-            
+
             return true;
         } catch (error) {
             console.error('Error updating student:', error);
@@ -359,13 +265,13 @@ class FirebaseService {
                 this.firestore.collection(this.db, 'students'),
                 this.firestore.where('email', '==', email)
             );
-            
+
             const querySnapshot = await this.firestore.getDocs(q);
-            
+
             if (querySnapshot.empty) {
                 return null;
             }
-            
+
             const doc = querySnapshot.docs[0];
             return { id: doc.id, ...doc.data() };
         } catch (error) {
@@ -374,113 +280,9 @@ class FirebaseService {
         }
     }
 
-    // Admin Panel Content Methods
-    async addContent(contentData) {
-        await this.initialize();
-        try {
-            const docRef = await this.firestore.addDoc(this.firestore.collection(this.db, 'content'), {
-                ...contentData,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            });
-            
-            return { id: docRef.id, ...contentData };
-        } catch (error) {
-            console.error('Error adding content:', error);
-            throw error;
-        }
-    }
 
-    async getContent(category = null) {
-        await this.initialize();
-        try {
-            let q = this.firestore.query(
-                this.firestore.collection(this.db, 'content'),
-                this.firestore.orderBy('createdAt', 'desc')
-            );
-            
-            if (category) {
-                q = this.firestore.query(
-                    this.firestore.collection(this.db, 'content'),
-                    this.firestore.where('category', '==', category),
-                    this.firestore.orderBy('createdAt', 'desc')
-                );
-            }
-            
-            const querySnapshot = await this.firestore.getDocs(q);
-            
-            const content = [];
-            querySnapshot.forEach((doc) => {
-                content.push({ id: doc.id, ...doc.data() });
-            });
-            
-            return content;
-        } catch (error) {
-            console.error('Error getting content:', error);
-            throw error;
-        }
-    }
 
-    async updateContent(contentId, updateData) {
-        await this.initialize();
-        try {
-            const contentRef = this.firestore.doc(this.db, 'content', contentId);
-            await this.firestore.updateDoc(contentRef, {
-                ...updateData,
-                updatedAt: new Date().toISOString()
-            });
-            
-            return true;
-        } catch (error) {
-            console.error('Error updating content:', error);
-            throw error;
-        }
-    }
 
-    async deleteContent(contentId) {
-        await this.initialize();
-        try {
-            await this.firestore.deleteDoc(this.firestore.doc(this.db, 'content', contentId));
-            return true;
-        } catch (error) {
-            console.error('Error deleting content:', error);
-            throw error;
-        }
-    }
-
-    // Student Personal Data Methods
-    async getStudentPersonalData(studentId) {
-        await this.initialize();
-        try {
-            const docRef = this.firestore.doc(this.db, 'student_data', studentId);
-            const docSnap = await this.firestore.getDoc(docRef);
-            
-            if (docSnap.exists()) {
-                return { id: docSnap.id, ...docSnap.data() };
-            } else {
-                return null;
-            }
-        } catch (error) {
-            console.error('Error getting student personal data:', error);
-            throw error;
-        }
-    }
-
-    async updateStudentPersonalData(studentId, personalData) {
-        await this.initialize();
-        try {
-            const docRef = this.firestore.doc(this.db, 'student_data', studentId);
-            await this.firestore.updateDoc(docRef, {
-                ...personalData,
-                updatedAt: new Date().toISOString()
-            });
-            
-            return true;
-        } catch (error) {
-            console.error('Error updating student personal data:', error);
-            throw error;
-        }
-    }
 
     // Utility Methods
     onAuthStateChanged(callback) {

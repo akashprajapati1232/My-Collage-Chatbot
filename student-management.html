@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management - BitBot Admin</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="css/login.css">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         .management-container {
             max-width: 800px;
@@ -388,19 +394,30 @@
         }
 
         async function removeStudent(studentId) {
-            if (confirm('Are you sure you want to remove this student?')) {
+            const result = await Swal.fire({
+                title: 'Remove Student?',
+                text: 'Are you sure you want to remove this student?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
                 try {
                     // Check authentication first
                     const currentUser = firebaseService.getCurrentUser();
                     if (!currentUser) {
-                        showMessage('listMessage', 'Authentication required to remove students', 'error');
+                        showToast('Authentication required to remove students', 'error');
                         return;
                     }
 
                     // Verify user is admin
                     const adminData = await firebaseService.getAdminByUid(currentUser.uid);
                     if (!adminData) {
-                        showMessage('listMessage', 'Access denied. Only admins can remove students.', 'error');
+                        showToast('Access denied. Only admins can remove students.', 'error');
                         return;
                     }
 
@@ -441,25 +458,74 @@
             showMessage('listMessage', 'Student list exported successfully', 'success');
         }
 
-        function clearAllStudents() {
-            if (confirm('Are you sure you want to remove ALL students? This action cannot be undone.')) {
+        async function clearAllStudents() {
+            const result = await Swal.fire({
+                title: 'Remove ALL Students?',
+                text: 'Are you sure you want to remove ALL students? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove all!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
                 students = [];
                 localStorage.setItem('bitbot_students', JSON.stringify(students));
                 loadStudents();
-                showMessage('bulkMessage', 'All students removed successfully', 'success');
+                showToast('All students removed successfully', 'success');
             }
         }
 
-        function showMessage(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.className = `message ${type}`;
-            element.style.display = 'block';
-            
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 5000);
+        function showToast(message, type = 'success') {
+            let backgroundColor;
+            let icon;
+
+            switch(type) {
+                case 'success':
+                    backgroundColor = 'linear-gradient(to right, #00b09b, #96c93d)';
+                    icon = '✅';
+                    break;
+                case 'error':
+                    backgroundColor = 'linear-gradient(to right, #ff5f6d, #ffc371)';
+                    icon = '❌';
+                    break;
+                case 'warning':
+                    backgroundColor = 'linear-gradient(to right, #f093fb, #f5576c)';
+                    icon = '⚠️';
+                    break;
+                case 'info':
+                    backgroundColor = 'linear-gradient(to right, #4facfe, #00f2fe)';
+                    icon = 'ℹ️';
+                    break;
+                default:
+                    backgroundColor = 'linear-gradient(to right, #667eea, #764ba2)';
+                    icon = '📝';
+            }
+
+            Toastify({
+                text: `${icon} ${message}`,
+                duration: 4000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                stopOnFocus: true,
+                style: {
+                    background: backgroundColor,
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }
+            }).showToast();
         }
     </script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 </body>
 </html>
