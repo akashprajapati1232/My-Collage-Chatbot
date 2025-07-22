@@ -26,9 +26,9 @@ function getPageType() {
     const currentPage = window.location.pathname;
     return {
         currentPage,
-        isProtectedPage: currentPage.includes('admin-panel.html') || currentPage.includes('student-dashboard.html'),
+        isProtectedPage: currentPage.includes('admin-panel.html'),
         isAdminPage: currentPage.includes('admin-panel.html'),
-        isStudentPage: currentPage.includes('student-dashboard.html'),
+        isStudentPage: false, // Student dashboard removed
         isPublicPage: currentPage.includes('index.html') || currentPage === '/' || currentPage === '',
         isInAdminFolder: currentPage.includes('/admin/')
     };
@@ -392,15 +392,17 @@ function isPrivateQuery(query) {
 }
 
 function handlePrivateQueryResponse(query) {
+    // Directly open login popup instead of showing intermediate dialog
+    setTimeout(() => {
+        if (typeof openLoginPopup === 'function') {
+            openLoginPopup('student');
+        }
+    }, 300);
+
     return {
         isPrivate: true,
-        response: `🔒 <strong>Authentication Required</strong><br><br>
-                   To access personal information like "${query}", you need to log in as a student.<br><br>
-                   <div style="margin-top: 15px;">
-                       <button onclick="openLoginPopup('student')" style="background: #000; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">
-                           🔑 Login as Student
-                       </button>
-                   </div><br>
+        response: `🔒 <strong>Login Required</strong><br><br>
+                   Opening student login window to access "${query}"...<br><br>
                    <small style="color: #666;">Your personal data is protected and requires authentication to access.</small>`
     };
 }
@@ -488,61 +490,18 @@ function handleLoginQuery(queryLower) {
 }
 
 // ===== STUDENT PAGE PROTECTION =====
-
-function protectStudentPage() {
-    // Check for student session
-    const studentSession = localStorage.getItem('bitbot_student_session');
-
-    if (!studentSession) {
-        // No student session, show student login popup
-        if (typeof openLoginPopup === 'function') {
-            openLoginPopup('student');
-        }
-        return;
-    }
-
-    try {
-        const studentData = JSON.parse(studentSession);
-        // Verify session is valid
-        if (!studentData.email || studentData.userType !== 'student') {
-            localStorage.removeItem('bitbot_student_session');
-            if (typeof openLoginPopup === 'function') {
-                openLoginPopup('student');
-            }
-            return;
-        }
-
-        // Session is valid, initialize Firebase auth for backward compatibility
-        initializeFirebaseAuth();
-    } catch (error) {
-        // Invalid session data
-        localStorage.removeItem('bitbot_student_session');
-        if (typeof openLoginPopup === 'function') {
-            openLoginPopup('student');
-        }
-    }
-}
-
-function initializeAuthenticatedChatbot() {
-    // Initialize chatbot for authenticated users
-    // This can access private information
-    initializeLogout();
-}
+// Student dashboard functionality removed
 
 // ===== INITIALIZATION =====
 
 // Auto-initialize based on current page
 document.addEventListener('DOMContentLoaded', () => {
-    const { isAdminPage, isStudentPage } = getPageType();
+    const { isAdminPage } = getPageType();
 
     if (isAdminPage) {
         // Admin panel - protected
         protectPage();
         initializeLogout();
-    } else if (isStudentPage) {
-        // Student dashboard - protected
-        protectStudentPage();
-        initializeAuthenticatedChatbot();
     } else {
         // Public pages (index.html)
         initializePublicChatbot();
@@ -851,8 +810,6 @@ function checkStudentLoginStatus() {
 // Export functions for global access
 window.initializePublicChatbot = initializePublicChatbot;
 window.protectPage = protectPage;
-window.protectStudentPage = protectStudentPage;
-window.initializeAuthenticatedChatbot = initializeAuthenticatedChatbot;
 window.isPrivateQuery = isPrivateQuery;
 window.handlePrivateQueryResponse = handlePrivateQueryResponse;
 window.handlePublicQuery = handlePublicQuery;

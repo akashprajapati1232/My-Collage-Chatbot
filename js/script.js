@@ -132,27 +132,17 @@ function showAlert(title, text, icon = 'info', showConfirmButton = true) {
     });
 }
 
-// Login required prompt for sensitive queries
+// Login required prompt - directly opens login popup
 function showLoginRequired(message = "Please login to access this information") {
-    return Swal.fire({
-        title: '🔐 Login Required',
-        text: message,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#000',
-        cancelButtonColor: '#666',
-        confirmButtonText: 'Login Now',
-        cancelButtonText: 'Cancel',
-        background: '#fff',
-        color: '#333'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            if (typeof openLoginPopup === 'function') {
-                openLoginPopup('student');
-            }
+    // Show a brief toast notification
+    showToast('Opening student login...', 'info');
+
+    // Directly open the login popup
+    setTimeout(() => {
+        if (typeof openLoginPopup === 'function') {
+            openLoginPopup('student');
         }
-        return result;
-    });
+    }, 300);
 }
 
 // Add message to chat
@@ -255,20 +245,20 @@ function handleSendMessage() {
     }, responseDelay);
 }
 
-// Enhanced private query handler with SweetAlert2
+// Enhanced private query handler - directly open login popup
 function handlePrivateQueryWithAlert(message) {
-    let customMessage = "This information requires authentication. Please login to continue.";
+    // Add a message to chat indicating login is required
+    addMessage("🔒 This information requires authentication. Opening login window...");
 
-    // Customize message based on query type
-    if (message.toLowerCase().includes('fee')) {
-        customMessage = "To view your fee status and payment history, please login to your student account.";
-    } else if (message.toLowerCase().includes('result') || message.toLowerCase().includes('marks')) {
-        customMessage = "Exam results and grades are available only after logging into your student account.";
-    } else if (message.toLowerCase().includes('attendance')) {
-        customMessage = "Your attendance records are personalized data that requires authentication.";
-    }
+    // Show a brief toast notification
+    showToast('Opening student login...', 'info');
 
-    showEnhancedLoginPrompt(customMessage);
+    // Directly open the login popup after a short delay
+    setTimeout(() => {
+        if (typeof openLoginPopup === 'function') {
+            openLoginPopup('student');
+        }
+    }, 500);
 }
 
 // Check if query requires authentication
@@ -360,52 +350,7 @@ function displayNoticesInChat(noticesData) {
     showToast('Notices loaded successfully!', 'info');
 }
 
-// Enhanced login prompt with better styling
-function showEnhancedLoginPrompt(message = "Please login to access personalized information") {
-    return Swal.fire({
-        title: '🔐 Authentication Required',
-        html: `
-            <div style="text-align: left; margin: 20px 0;">
-                <p style="margin-bottom: 15px; color: #555;">${message}</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #000;">
-                    <h4 style="margin: 0 0 10px 0; color: #000;">🎓 With login, you can access:</h4>
-                    <ul style="margin: 0; padding-left: 20px; color: #666;">
-                        <li>Your fee status and payment history</li>
-                        <li>Personal attendance records</li>
-                        <li>Exam results and grades</li>
-                        <li>Course-specific announcements</li>
-                    </ul>
-                </div>
-            </div>
-        `,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#000',
-        cancelButtonColor: '#666',
-        confirmButtonText: '🚀 Login Now',
-        cancelButtonText: 'Maybe Later',
-        background: '#fff',
-        color: '#333',
-        customClass: {
-            popup: 'swal-popup-chatbot',
-            title: 'swal-title-chatbot',
-            htmlContainer: 'swal-content-chatbot'
-        },
-        width: '500px'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            showToast('Opening login...', 'info');
-            setTimeout(() => {
-                if (typeof openLoginPopup === 'function') {
-                    openLoginPopup('student');
-                }
-            }, 500);
-        } else {
-            addMessage("No worries! Feel free to ask about public information like course details, general timetables, or college info. 😊");
-        }
-        return result;
-    });
-}
+// Enhanced login prompt function removed - now directly opens login popup
 
 // Add message with HTML content
 function addMessageHTML(htmlContent) {

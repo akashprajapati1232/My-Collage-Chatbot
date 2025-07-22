@@ -74,14 +74,20 @@ class FirebaseService {
     async signInAdmin(email, password) {
         await this.initialize();
         try {
+            console.log('Attempting admin sign in for:', email);
             const userCredential = await this.firebaseAuth.signInWithEmailAndPassword(this.auth, email, password);
+            console.log('Firebase authentication successful');
 
             // Check if user is admin
             let adminDoc;
             try {
+                console.log('Checking admin document for UID:', userCredential.user.uid);
                 adminDoc = await this.firestore.getDoc(this.firestore.doc(this.db, 'admins', userCredential.user.uid));
             } catch (error) {
                 console.warn('Error reading admin doc:', error);
+                // Create admin document if it doesn't exist
+                await this.createAdminDocument(userCredential.user);
+                adminDoc = await this.firestore.getDoc(this.firestore.doc(this.db, 'admins', userCredential.user.uid));
             }
 
             if (!adminDoc || !adminDoc.exists()) {
@@ -403,6 +409,49 @@ class FirebaseService {
             }
         }
         throw new Error('Firebase failed to initialize after multiple attempts');
+    }
+
+    // Create admin document for authenticated user
+    async createAdminDocument(user) {
+        try {
+            console.log('Creating admin document for user:', user.email);
+            const adminData = {
+                uid: user.uid,
+                email: user.email,
+                name: user.displayName || 'Admin User',
+                role: 'admin',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                lastLogin: new Date().toISOString()
+            };
+
+            await this.firestore.setDoc(this.firestore.doc(this.db, 'admins', user.uid), adminData);
+            console.log('Admin document created successfully');
+            return adminData;
+        } catch (error) {
+            console.error('Error creating admin document:', error);
+            throw error;
+        }
+    }
+
+    // Initialize required collections
+    async initializeCollections() {
+        const collections = ['courses', 'students', 'faculty', 'notices', 'admins'];
+
+        for (const collectionName of collections) {
+            try {
+                const snapshot = await this.firestore.getDocs(
+                    this.firestore.collection(this.db, collectionName)
+                );
+
+                if (snapshot.empty) {
+                    console.log(`Initializing ${collectionName} collection...`);
+                    // Collection is empty, we'll let the admin panel create sample data
+                }
+            } catch (error) {
+                console.warn(`Error checking ${collectionName} collection:`, error);
+            }
+        }
     }
 }
 

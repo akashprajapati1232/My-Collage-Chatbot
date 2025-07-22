@@ -192,6 +192,97 @@
         </main>
     </div>
 
+    <!-- Edit Course Modal -->
+    <div id="editCourseModal" class="course-edit-modal" style="display: none;">
+        <div class="course-modal-overlay" onclick="courseManager.closeEditModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="editModalTitle">
+                    <i class="fas fa-edit"></i>
+                    Edit Course
+                </h2>
+                <button class="modal-close" onclick="courseManager.closeEditModal()" aria-label="Close Modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editCourseForm" class="modern-form">
+                    <input type="hidden" id="editCourseId" name="courseId">
+
+                    <div class="course-form-grid">
+                        <!-- Basic Course Information -->
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editCourseName">📚 Course Name *</label>
+                            <input class="course-form-input" type="text" id="editCourseName" name="courseName" placeholder="e.g., BCA, B.Tech" required minlength="2" maxlength="100">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editDepartment">🏢 Department *</label>
+                            <input class="course-form-input" type="text" id="editDepartment" name="department" placeholder="e.g., Computer Applications, Computer Science" required minlength="2" maxlength="100">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editCourseAffiliation">🏛️ Course Affiliation *</label>
+                            <input class="course-form-input" type="text" id="editCourseAffiliation" name="courseAffiliation" placeholder="e.g., AKTU, CCSU" required minlength="2" maxlength="50">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editDuration">⏱️ Duration *</label>
+                            <input class="course-form-input" type="text" id="editDuration" name="duration" placeholder="e.g., 3 years" required minlength="1" maxlength="20">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editTotalSeats">👥 Total Seats *</label>
+                            <input class="course-form-input" type="number" id="editTotalSeats" name="totalSeats" placeholder="e.g., 60" required min="1" max="1000">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editFeeStructure">💰 Fee Structure (₹ per semester) *</label>
+                            <input class="course-form-input" type="text" id="editFeeStructure" name="feeStructure" placeholder="e.g., ₹25,000" required minlength="1" maxlength="50">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editOtherFee">➕ Other Fee (Optional)</label>
+                            <input class="course-form-input" type="text" id="editOtherFee" name="otherFee" placeholder="e.g., ₹2,000 stationary" maxlength="100">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editHodName">👨‍💼 HOD Name *</label>
+                            <input class="course-form-input" type="text" id="editHodName" name="hodName" placeholder="e.g., Dr. Ajay Singh" required minlength="2" maxlength="100">
+                        </div>
+
+                        <div class="course-form-group">
+                            <label class="course-form-label" for="editCounsellor">👩‍🏫 Course Counsellor</label>
+                            <input class="course-form-input" type="text" id="editCounsellor" name="counsellor" placeholder="e.g., Ms. Urvashi Chaudhary" maxlength="100">
+                        </div>
+
+                        <!-- Extended Information -->
+                        <div class="course-form-group" style="grid-column: 1 / -1;">
+                            <label class="course-form-label" for="editScholarshipOpportunities">🎓 Scholarship Opportunities</label>
+                            <textarea class="course-form-textarea" id="editScholarshipOpportunities" name="scholarshipOpportunities" rows="3" placeholder="e.g., UP Government Scholarship / Merit-based / None" maxlength="500"></textarea>
+                        </div>
+
+                        <div class="course-form-group" style="grid-column: 1 / -1;">
+                            <label class="course-form-label" for="editAdmissionEligibility">📋 Admission Eligibility</label>
+                            <textarea class="course-form-textarea" id="editAdmissionEligibility" name="admissionEligibility" rows="3" placeholder="e.g., 12th Pass with 45% marks (PCM/Arts/Commerce)" maxlength="500"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-save-course">
+                            <i class="fas fa-save"></i>
+                            Update Course
+                        </button>
+                        <button type="button" class="btn-cancel-course" onclick="courseManager.closeEditModal()">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Indicator -->
     <div id="loadingIndicator" class="loading-overlay">
         <div class="loading-spinner">

@@ -425,7 +425,16 @@
 }
 
 .all-courses-content {
-    padding: var(--spacing-lg);
+    padding: 0;
+}
+
+/* Ensure table fills entire width and remove black spots */
+#coursesTable {
+    width: 100% !important;
+}
+
+.tabulator {
+    width: 100% !important;
 }
 
 /* ===== TABULATOR CUSTOM STYLING ===== */
@@ -469,6 +478,11 @@
     border-right: 1px solid var(--border-light) !important;
     padding: var(--spacing-md) !important;
     color: var(--text-primary) !important;
+    background: inherit !important;
+}
+
+.tabulator .tabulator-tableholder .tabulator-table .tabulator-row .tabulator-cell:last-child {
+    border-right: none !important;
 }
 
 .tabulator .tabulator-footer {
@@ -661,4 +675,249 @@
         padding: var(--spacing-sm) !important;
         font-size: 0.75rem !important;
     }
+
+    /* Modal responsive styles */
+    .course-edit-modal .modal-content {
+        width: 98%;
+        margin: 10px;
+        border-radius: var(--radius-lg);
+        max-height: 95vh;
+    }
+
+    .course-edit-modal .modal-header,
+    .course-edit-modal .modal-body {
+        padding: var(--spacing-lg);
+    }
+
+    .course-edit-modal .modal-header {
+        padding-bottom: 0;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .course-edit-modal .modal-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .course-edit-modal .btn-save-course,
+    .course-edit-modal .btn-cancel-course {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ===== EDIT COURSE MODAL STYLES ===== */
+.course-edit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.3s ease-out;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+/* Ensure modal is above everything */
+.course-edit-modal * {
+    pointer-events: auto;
+}
+
+/* Prevent body blur when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
+body.modal-open .admin-container {
+    filter: none !important;
+    backdrop-filter: none !important;
+}
+
+.course-edit-modal .course-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+}
+
+.course-edit-modal .modal-content {
+    position: relative;
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease-out;
+    border: 1px solid var(--border-light);
+    z-index: 10002;
+}
+
+.course-edit-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-xl) 0 var(--spacing-xl);
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: var(--spacing-xl);
+}
+
+.course-edit-modal .modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.course-edit-modal .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.course-edit-modal .modal-close:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.course-edit-modal .modal-body {
+    padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+}
+
+.course-edit-modal .modal-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-light);
+}
+
+.course-edit-modal .btn-save-course {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.course-edit-modal .btn-save-course:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.course-edit-modal .btn-cancel-course {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.course-edit-modal .btn-cancel-course:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+}
+
+/* Modal animations */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Dark mode modal styles */
+body.dark-theme .course-edit-modal .modal-content {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-dark);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .course-edit-modal .modal-header {
+    border-bottom-color: var(--border-dark);
+}
+
+body.dark-theme .course-edit-modal .modal-close:hover {
+    background-color: var(--bg-secondary);
+}
+
+body.dark-theme .course-edit-modal .modal-actions {
+    border-top-color: var(--border-dark);
+}
+
+
+
+/* Form validation styles for edit modal */
+.course-edit-modal .course-form-input.error,
+.course-edit-modal .course-form-textarea.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.course-edit-modal .field-error {
+    color: #dc3545;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Loading state for submit button */
+.course-edit-modal .btn-save-course:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.course-edit-modal .btn-save-course:disabled:hover {
+    transform: none;
+    box-shadow: none;
 }

@@ -557,6 +557,7 @@ class CourseManager {
                 printAsHtml: true,
                 printHeader: "<h1>All Courses<h1>",
                 printFooter: "",
+                layoutColumnsOnNewData: true,
                 rowContextMenu: [
                     {
                         label: "Edit Course",
@@ -576,7 +577,6 @@ class CourseManager {
                         title: "Course Name",
                         field: "courseName",
                         width: 200,
-                        headerFilter: "input",
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return `<strong style="color: var(--primary-color);">${value}</strong>`;
@@ -585,26 +585,22 @@ class CourseManager {
                     {
                         title: "Department",
                         field: "department",
-                        width: 180,
-                        headerFilter: "input"
+                        width: 180
                     },
                     {
                         title: "Affiliation",
                         field: "courseAffiliation",
-                        width: 150,
-                        headerFilter: "input"
+                        width: 150
                     },
                     {
                         title: "Duration",
                         field: "duration",
-                        width: 120,
-                        headerFilter: "input"
+                        width: 120
                     },
                     {
                         title: "Total Seats",
                         field: "totalSeats",
                         width: 120,
-                        headerFilter: "number",
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return `<span style="background: var(--success-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">${value}</span>`;
@@ -614,7 +610,6 @@ class CourseManager {
                         title: "Fee Structure",
                         field: "feeStructure",
                         width: 150,
-                        headerFilter: "input",
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return `<span style="color: var(--success-color); font-weight: 600;">₹${value}</span>`;
@@ -623,8 +618,16 @@ class CourseManager {
                     {
                         title: "HOD",
                         field: "hodName",
-                        width: 150,
-                        headerFilter: "input"
+                        width: 160
+                    },
+                    {
+                        title: "Counsellor",
+                        field: "counsellor",
+                        width: 160,
+                        formatter: (cell) => {
+                            const value = cell.getValue();
+                            return value ? `<span style="color: var(--text-secondary);">${value}</span>` : '<span style="color: #ccc;">Not assigned</span>';
+                        }
                     },
                     {
                         title: "Actions",
@@ -674,29 +677,272 @@ class CourseManager {
                 return;
             }
 
-            // Redirect to courses.html with course data for editing
-            const params = new URLSearchParams({
-                edit: courseId,
-                courseName: course.courseName || '',
-                department: course.department || '',
-                courseAffiliation: course.courseAffiliation || '',
-                duration: course.duration || '',
-                totalSeats: course.totalSeats || '',
-                feeStructure: course.feeStructure || '',
-                otherFee: course.otherFee || '',
-                scholarshipOpportunities: course.scholarshipOpportunities || '',
-                admissionEligibility: course.admissionEligibility || '',
-                hodName: course.hodName || '',
-                counsellor: course.counsellor || ''
-            });
-
-            window.location.href = `courses.html?${params.toString()}`;
+            // Open edit modal with course data
+            this.openEditModal(course);
 
         } catch (error) {
             console.error('Error editing course:', error);
             this.showMessage('Error loading course for editing', 'error');
         }
     }
+
+    openEditModal(course) {
+        console.log('Opening edit modal for course:', course.courseName);
+        const modal = document.getElementById('editCourseModal');
+        if (!modal) {
+            console.error('Edit modal not found');
+            return;
+        }
+
+        // Populate form fields with course data
+        document.getElementById('editCourseId').value = course.id || '';
+        document.getElementById('editCourseName').value = course.courseName || '';
+        document.getElementById('editDepartment').value = course.department || '';
+        document.getElementById('editCourseAffiliation').value = course.courseAffiliation || '';
+        document.getElementById('editDuration').value = course.duration || '';
+        document.getElementById('editTotalSeats').value = course.totalSeats || '';
+        document.getElementById('editFeeStructure').value = course.feeStructure || '';
+        document.getElementById('editOtherFee').value = course.otherFee || '';
+        document.getElementById('editScholarshipOpportunities').value = course.scholarshipOpportunities || '';
+        document.getElementById('editAdmissionEligibility').value = course.admissionEligibility || '';
+        document.getElementById('editHodName').value = course.hodName || '';
+        document.getElementById('editCounsellor').value = course.counsellor || '';
+
+        // Update modal title
+        const modalTitle = document.getElementById('editModalTitle');
+        if (modalTitle) {
+            modalTitle.innerHTML = `<i class="fas fa-edit"></i> Edit Course: ${course.courseName}`;
+        }
+
+        // Show modal
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
+
+        console.log('Modal displayed, z-index:', window.getComputedStyle(modal).zIndex);
+
+        // Setup form submission handler
+        this.setupEditFormHandler();
+
+        // Setup keyboard event handler
+        this.setupModalKeyboardHandler();
+
+        // Focus first input
+        setTimeout(() => {
+            const firstInput = document.getElementById('editCourseName');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 100);
+    }
+
+    closeEditModal() {
+        const modal = document.getElementById('editCourseModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Remove keyboard event listener
+        document.removeEventListener('keydown', this.modalKeyboardHandler);
+    }
+
+    setupModalKeyboardHandler() {
+        // Remove existing handler if any
+        if (this.modalKeyboardHandler) {
+            document.removeEventListener('keydown', this.modalKeyboardHandler);
+        }
+
+        // Create new handler
+        this.modalKeyboardHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.closeEditModal();
+            }
+        };
+
+        // Add event listener
+        document.addEventListener('keydown', this.modalKeyboardHandler);
+    }
+
+    setupEditFormValidation(form) {
+        const requiredFields = ['editCourseName', 'editDepartment', 'editCourseAffiliation', 'editDuration', 'editTotalSeats', 'editFeeStructure', 'editHodName'];
+
+        requiredFields.forEach(fieldId => {
+            const field = form.querySelector(`#${fieldId}`);
+            if (field) {
+                // Validate on blur (when user leaves the field)
+                field.addEventListener('blur', () => {
+                    this.validateEditField(fieldId);
+                });
+
+                // Clear error on input (when user starts typing)
+                field.addEventListener('input', () => {
+                    if (field.classList.contains('error')) {
+                        field.classList.remove('error');
+                        const errorElement = document.getElementById(`${fieldId}-error`);
+                        if (errorElement) {
+                            errorElement.style.display = 'none';
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    validateEditField(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (!field) return true;
+
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+
+        // Check if required field is empty
+        if (!value) {
+            isValid = false;
+            errorMessage = 'This field is required';
+        } else {
+            // Specific validations
+            switch (fieldId) {
+                case 'editTotalSeats':
+                    const seats = parseInt(value);
+                    if (isNaN(seats) || seats < 1 || seats > 1000) {
+                        isValid = false;
+                        errorMessage = 'Total seats must be between 1 and 1000';
+                    }
+                    break;
+                case 'editCourseName':
+                case 'editDepartment':
+                case 'editHodName':
+                    if (value.length < 2) {
+                        isValid = false;
+                        errorMessage = 'Must be at least 2 characters long';
+                    }
+                    break;
+            }
+        }
+
+        // Show/hide error
+        if (!isValid) {
+            field.classList.add('error');
+            this.showFieldError(fieldId, errorMessage);
+        } else {
+            field.classList.remove('error');
+            this.hideFieldError(fieldId);
+        }
+
+        return isValid;
+    }
+
+    showFieldError(fieldId, message) {
+        let errorElement = document.getElementById(`${fieldId}-error`);
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.id = `${fieldId}-error`;
+            errorElement.className = 'field-error';
+            errorElement.style.cssText = 'color: #dc3545; font-size: 0.75rem; margin-top: 4px; display: block;';
+
+            const field = document.getElementById(fieldId);
+            if (field && field.parentNode) {
+                field.parentNode.appendChild(errorElement);
+            }
+        }
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    hideFieldError(fieldId) {
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+    }
+
+    setupEditFormHandler() {
+        const form = document.getElementById('editCourseForm');
+        if (!form) return;
+
+        // Remove existing event listeners to prevent duplicates
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+
+        // Add new event listener
+        newForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleEditFormSubmission(e);
+        });
+
+        // Add real-time validation
+        this.setupEditFormValidation(newForm);
+    }
+
+    async handleEditFormSubmission(e) {
+        try {
+            const formData = new FormData(e.target);
+            const courseData = {};
+
+            // Extract form data
+            for (let [key, value] of formData.entries()) {
+                courseData[key] = value.trim();
+            }
+
+            // Validate required fields
+            const requiredFields = ['courseName', 'department', 'courseAffiliation', 'duration', 'totalSeats', 'feeStructure', 'hodName'];
+            const missingFields = requiredFields.filter(field => !courseData[field]);
+
+            if (missingFields.length > 0) {
+                this.showMessage(`Please fill in all required fields: ${missingFields.join(', ')}`, 'error');
+                return;
+            }
+
+            // Validate total seats
+            const totalSeats = parseInt(courseData.totalSeats);
+            if (isNaN(totalSeats) || totalSeats < 1 || totalSeats > 1000) {
+                this.showMessage('Total seats must be a number between 1 and 1000', 'error');
+                return;
+            }
+
+            // Add metadata
+            courseData.updatedAt = new Date().toISOString();
+            courseData.totalSeats = totalSeats;
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            submitBtn.disabled = true;
+
+            // Update course in database
+            await this.updateDocument('courses', courseData.courseId, courseData);
+
+            // Show success message
+            this.showMessage('Course updated successfully!', 'success');
+
+            // Close modal
+            this.closeEditModal();
+
+            // Refresh the table
+            await this.loadCourses();
+            if (this.coursesTable) {
+                this.coursesTable.setData(this.courses);
+                this.updateCourseCount();
+            }
+
+        } catch (error) {
+            console.error('Error updating course:', error);
+            this.showMessage('Error updating course. Please try again.', 'error');
+        } finally {
+            // Reset button state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Course';
+                submitBtn.disabled = false;
+            }
+        }
+    }
+
+
 
     async deleteCourseFromTable(courseId) {
         try {

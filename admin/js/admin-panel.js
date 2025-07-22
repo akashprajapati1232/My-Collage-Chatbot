@@ -95,10 +95,45 @@ class AdminPanel {
                 throw new Error('Firebase service failed to initialize');
             }
 
+            // Test Firebase connection
+            await this.testFirebaseConnection();
+
             console.log('Firebase service initialized for admin panel');
         } catch (error) {
             console.error('Error initializing Firebase:', error);
+            this.showMessage('Firebase initialization failed. Please check your connection and try again.', 'error');
             throw error;
+        }
+    }
+
+    async testFirebaseConnection() {
+        try {
+            console.log('Testing Firebase connection...');
+
+            // Test authentication
+            const currentUser = this.firebaseService.getCurrentUser();
+            if (!currentUser) {
+                console.warn('No authenticated user found');
+                return;
+            }
+
+            console.log('User authenticated:', currentUser.email);
+
+            // Test Firestore access by trying to read a collection
+            const testCollection = this.firebaseService.firestore.collection(this.firebaseService.db, 'admins');
+            await this.firebaseService.firestore.getDocs(testCollection);
+
+            console.log('Firebase connection test successful');
+        } catch (error) {
+            console.error('Firebase connection test failed:', error);
+
+            if (error.code === 'permission-denied') {
+                throw new Error('Permission denied. Please check Firestore security rules.');
+            } else if (error.code === 'unauthenticated') {
+                throw new Error('Authentication required. Please log in again.');
+            } else {
+                throw new Error(`Firebase connection failed: ${error.message}`);
+            }
         }
     }
 
@@ -633,10 +668,35 @@ class AdminPanel {
             }
         } catch (error) {
             console.error(`Error loading ${pageName} data:`, error);
-            this.showMessage(`Error loading ${pageName} data`, 'error');
+
+            // Provide more specific error messages
+            let errorMessage = `Error loading ${pageName} data`;
+            if (error.code === 'permission-denied') {
+                errorMessage = 'Permission denied. Please check Firebase security rules.';
+            } else if (error.code === 'unauthenticated') {
+                errorMessage = 'Authentication required. Please log in again.';
+            } else if (error.message.includes('Firebase service not ready')) {
+                errorMessage = 'Firebase connection failed. Please refresh the page.';
+            } else if (error.message) {
+                errorMessage = `${errorMessage}: ${error.message}`;
+            }
+
+            this.showMessage(errorMessage, 'error');
+
+            // Add debug information to console
+            this.debugFirebaseState();
         } finally {
             this.showLoading(false);
         }
+    }
+
+    debugFirebaseState() {
+        console.group('🔍 Firebase Debug Information');
+        console.log('Firebase Service Available:', !!window.firebaseService);
+        console.log('Firebase Service Ready:', window.firebaseService?.isReady());
+        console.log('Current User:', window.firebaseService?.getCurrentUser()?.email || 'Not authenticated');
+        console.log('Firebase Config:', window.FIREBASE_CONFIG);
+        console.groupEnd();
     }
 
 
@@ -2224,30 +2284,128 @@ class AdminPanel {
             throw new Error('Firebase service not ready');
         }
 
-        // Load statistics
-        const [courses, students, faculty, notices] = await Promise.all([
-            this.firebaseService.firestore.getDocs(
-                this.firebaseService.firestore.collection(this.firebaseService.db, 'courses')
-            ),
-            this.firebaseService.firestore.getDocs(
-                this.firebaseService.firestore.collection(this.firebaseService.db, 'students')
-            ),
-            this.firebaseService.firestore.getDocs(
-                this.firebaseService.firestore.collection(this.firebaseService.db, 'faculty')
-            ),
-            this.firebaseService.firestore.getDocs(
-                this.firebaseService.firestore.collection(this.firebaseService.db, 'notices')
-            )
-        ]);
+        try {
+            console.log('Loading dashboard data from Firebase...');
 
-        // Update stat cards
-        document.getElementById('totalCourses').textContent = courses.size;
-        document.getElementById('totalStudents').textContent = students.size;
-        document.getElementById('totalFaculty').textContent = faculty.size;
-        document.getElementById('totalNotices').textContent = notices.size;
+            // Check authentication first
+            const currentUser = this.firebaseService.getCurrentUser();
+            if (!currentUser) {
+                throw new Error('User not authenticated');
+            }
 
-        // Calculate real changes from Firebase data
-        await this.calculateStatChanges();
+            console.log('User authenticated:', currentUser.email);
+
+            // Load statistics with individual error handling
+            const stats = await this.loadCollectionStats();
+
+            // Update stat cards
+            document.getElementById('totalCourses').textContent = stats.courses;
+            document.getElementById('totalStudents').textContent = stats.students;
+            document.getElementById('totalFaculty').textContent = stats.faculty;
+            document.getElementById('totalNotices').textContent = stats.notices;
+
+            // Calculate real changes from Firebase data
+            await this.calculateStatChanges();
+
+            console.log('Dashboard data loaded successfully');
+        } catch (error) {
+            console.error('Error in loadDashboardData:', error);
+            throw error;
+        }
+    }
+
+    async loadCollectionStats() {
+        const collections = ['courses', 'students', 'faculty', 'notices'];
+        const stats = {};
+
+        for (const collectionName of collections) {
+            try {
+                console.log(`Loading ${collectionName} collection...`);
+                const snapshot = await this.firebaseService.firestore.getDocs(
+                    this.firebaseService.firestore.collection(this.firebaseService.db, collectionName)
+                );
+                stats[collectionName] = snapshot.size;
+                console.log(`${collectionName}: ${snapshot.size} documents`);
+            } catch (error) {
+                console.warn(`Error loading ${collectionName}:`, error);
+                stats[collectionName] = 0;
+
+                // Try to create the collection if it doesn't exist
+                await this.initializeCollection(collectionName);
+            }
+        }
+
+        return stats;
+    }
+
+    async initializeCollection(collectionName) {
+        try {
+            console.log(`Initializing ${collectionName} collection...`);
+
+            // Create a sample document to initialize the collection
+            const sampleData = this.getSampleData(collectionName);
+
+            await this.firebaseService.firestore.addDoc(
+                this.firebaseService.firestore.collection(this.firebaseService.db, collectionName),
+                sampleData
+            );
+
+            console.log(`${collectionName} collection initialized with sample data`);
+        } catch (error) {
+            console.warn(`Could not initialize ${collectionName} collection:`, error);
+        }
+    }
+
+    getSampleData(collectionName) {
+        const timestamp = new Date().toISOString();
+
+        switch (collectionName) {
+            case 'courses':
+                return {
+                    courseName: 'Sample Course',
+                    department: 'Computer Science',
+                    duration: '3 years',
+                    totalSeats: 60,
+                    feeStructure: '₹25,000',
+                    createdAt: timestamp,
+                    updatedAt: timestamp,
+                    isActive: true
+                };
+            case 'students':
+                return {
+                    name: 'Sample Student',
+                    email: 'sample@example.com',
+                    course: 'BCA',
+                    year: '1',
+                    rollNumber: '001',
+                    createdAt: timestamp,
+                    updatedAt: timestamp
+                };
+            case 'faculty':
+                return {
+                    name: 'Sample Faculty',
+                    email: 'faculty@example.com',
+                    department: 'Computer Science',
+                    designation: 'Professor',
+                    createdAt: timestamp,
+                    updatedAt: timestamp
+                };
+            case 'notices':
+                return {
+                    title: 'Welcome Notice',
+                    content: 'Welcome to the admin panel!',
+                    priority: 'medium',
+                    isActive: true,
+                    createdAt: timestamp,
+                    updatedAt: timestamp
+                };
+            default:
+                return {
+                    name: 'Sample Data',
+                    createdAt: timestamp,
+                    updatedAt: timestamp
+                };
+        }
     }
 
 
@@ -2258,15 +2416,18 @@ class AdminPanel {
         try {
             const oneMonthAgo = new Date();
             oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            const oneMonthAgoISO = oneMonthAgo.toISOString();
 
             const collections = ['courses', 'students', 'faculty', 'notices'];
 
             for (const collectionName of collections) {
                 try {
+                    console.log(`Calculating changes for ${collectionName}...`);
+
                     const snapshot = await this.firebaseService.firestore.getDocs(
                         this.firebaseService.firestore.query(
                             this.firebaseService.firestore.collection(this.firebaseService.db, collectionName),
-                            this.firebaseService.firestore.where('createdAt', '>=', oneMonthAgo)
+                            this.firebaseService.firestore.where('createdAt', '>=', oneMonthAgoISO)
                         )
                     );
 
@@ -2277,6 +2438,8 @@ class AdminPanel {
                     const element = document.getElementById(elementId);
                     if (element) {
                         element.textContent = changeText;
+                    } else {
+                        console.warn(`Element ${elementId} not found in DOM`);
                     }
                 } catch (error) {
                     console.warn(`Error calculating changes for ${collectionName}:`, error);
