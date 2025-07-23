@@ -558,6 +558,7 @@ class CourseManager {
                 printHeader: "<h1>All Courses<h1>",
                 printFooter: "",
                 layoutColumnsOnNewData: true,
+                autoResize: true,
                 rowContextMenu: [
                     {
                         label: "Edit Course",
@@ -576,7 +577,8 @@ class CourseManager {
                     {
                         title: "Course Name",
                         field: "courseName",
-                        width: 200,
+                        minWidth: 180,
+                        widthGrow: 2,
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return `<strong style="color: var(--primary-color);">${value}</strong>`;
@@ -585,22 +587,26 @@ class CourseManager {
                     {
                         title: "Department",
                         field: "department",
-                        width: 180
+                        minWidth: 160,
+                        widthGrow: 2
                     },
                     {
                         title: "Affiliation",
                         field: "courseAffiliation",
-                        width: 150
+                        minWidth: 140,
+                        widthGrow: 1.5
                     },
                     {
                         title: "Duration",
                         field: "duration",
-                        width: 120
+                        minWidth: 100,
+                        widthGrow: 1
                     },
                     {
                         title: "Total Seats",
                         field: "totalSeats",
-                        width: 120,
+                        minWidth: 100,
+                        widthGrow: 1,
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return `<span style="background: var(--success-color); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">${value}</span>`;
@@ -609,7 +615,8 @@ class CourseManager {
                     {
                         title: "Fee Structure",
                         field: "feeStructure",
-                        width: 150,
+                        minWidth: 130,
+                        widthGrow: 1.5,
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return `<span style="color: var(--success-color); font-weight: 600;">₹${value}</span>`;
@@ -618,12 +625,14 @@ class CourseManager {
                     {
                         title: "HOD",
                         field: "hodName",
-                        width: 160
+                        minWidth: 140,
+                        widthGrow: 1.5
                     },
                     {
                         title: "Counsellor",
                         field: "counsellor",
-                        width: 160,
+                        minWidth: 140,
+                        widthGrow: 1.5,
                         formatter: (cell) => {
                             const value = cell.getValue();
                             return value ? `<span style="color: var(--text-secondary);">${value}</span>` : '<span style="color: #ccc;">Not assigned</span>';
@@ -632,12 +641,12 @@ class CourseManager {
                     {
                         title: "Actions",
                         field: "actions",
-                        width: 150,
+                        width: 140,
                         headerSort: false,
                         formatter: (cell) => {
                             const rowData = cell.getRow().getData();
                             return `
-                                <div style="display: flex; gap: 5px; justify-content: center;">
+                                <div style="display: flex; gap: 4px; justify-content: center;">
                                     <button onclick="courseManager.editCourseInline('${rowData.id}')"
                                             style="background: var(--primary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
                                         <i class="fas fa-edit"></i> Edit

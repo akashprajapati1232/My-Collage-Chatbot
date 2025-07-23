@@ -382,6 +382,7 @@
     box-shadow: var(--shadow-lg);
     overflow: hidden;
     margin-bottom: var(--spacing-xl);
+    width: 100%;
 }
 
 .all-courses-header {
@@ -431,10 +432,26 @@
 /* Ensure table fills entire width and remove black spots */
 #coursesTable {
     width: 100% !important;
+    min-width: 100% !important;
 }
 
 .tabulator {
     width: 100% !important;
+    min-width: 100% !important;
+}
+
+.tabulator .tabulator-header {
+    width: 100% !important;
+}
+
+.tabulator .tabulator-tableholder {
+    width: 100% !important;
+    overflow-x: auto;
+}
+
+.tabulator .tabulator-table {
+    width: 100% !important;
+    min-width: 100% !important;
 }
 
 /* ===== TABULATOR CUSTOM STYLING ===== */
@@ -483,6 +500,27 @@
 
 .tabulator .tabulator-tableholder .tabulator-table .tabulator-row .tabulator-cell:last-child {
     border-right: none !important;
+}
+
+/* Force table to fill container completely */
+.tabulator .tabulator-tableholder .tabulator-table {
+    table-layout: auto !important;
+}
+
+/* Ensure columns stretch to fill available space */
+.tabulator .tabulator-header .tabulator-col {
+    min-width: 0 !important;
+}
+
+/* Remove any potential margins or padding that could cause gaps */
+.tabulator .tabulator-tableholder {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.tabulator .tabulator-table {
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .tabulator .tabulator-footer {
@@ -920,4 +958,90 @@ body.dark-theme .course-edit-modal .modal-actions {
 .course-edit-modal .btn-save-course:disabled:hover {
     transform: none;
     box-shadow: none;
+}
+
+/* ===== ENHANCED TIMETABLE TABULATOR STYLING ===== */
+.tabulator {
+    background: white !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.tabulator-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+.tabulator-header .tabulator-col {
+    border-right: 1px solid rgba(255,255,255,0.2) !important;
+    padding: 12px 8px !important;
+}
+
+.tabulator-header .tabulator-col-title {
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    color: white !important;
+}
+
+.tabulator-row {
+    border-bottom: 1px solid #f0f0f0 !important;
+    transition: all 0.2s ease !important;
+}
+
+.tabulator-row:hover {
+    background-color: #f8f9ff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.tabulator-row.tabulator-row-even {
+    background-color: #fafafa !important;
+}
+
+.tabulator-row.tabulator-row-even:hover {
+    background-color: #f0f0ff !important;
+}
+
+.tabulator-cell {
+    padding: 12px 8px !important;
+    font-size: 13px !important;
+    vertical-align: middle !important;
+}
+
+/* Header Filters */
+.tabulator-header-filter input,
+.tabulator-header-filter select {
+    width: 100% !important;
+    padding: 4px 6px !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    border-radius: 4px !important;
+    background: rgba(255,255,255,0.9) !important;
+    color: #333 !important;
+    font-size: 12px !important;
+}
+
+.tabulator-header-filter input:focus,
+.tabulator-header-filter select:focus {
+    outline: none !important;
+    border-color: rgba(255,255,255,0.8) !important;
+    background: white !important;
+}
+
+/* Action Buttons Hover Effects */
+.btn-edit:hover {
+    background: #218838 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+.btn-delete:hover {
+    background: #c82333 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3) !important;
 }

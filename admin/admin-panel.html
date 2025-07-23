@@ -79,17 +79,47 @@
                             <span class="menu-text">Dashboard</span>
                         </button>
                     </li>
-                    <li class="menu-item">
-                        <a href="courses.html" class="menu-link">
-                            <i class="fas fa-book"></i>
+                    <li class="menu-item has-dropdown">
+                        <button class="menu-btn dropdown-toggle" data-dropdown="courses">
+                            <i class="fas fa-graduation-cap"></i>
                             <span class="menu-text">Courses</span>
-                        </a>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <ul class="dropdown-submenu" id="courses-dropdown">
+                            <li class="submenu-item">
+                                <a href="courses.html" class="submenu-link">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span class="submenu-text">Add Courses</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="all-courses.html" class="submenu-link">
+                                    <i class="fas fa-list"></i>
+                                    <span class="submenu-text">View All</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="menu-item">
-                        <a href="timetables.html" class="menu-link">
+                    <li class="menu-item has-dropdown">
+                        <button class="menu-btn dropdown-toggle" data-dropdown="timetables">
                             <i class="fas fa-calendar-alt"></i>
                             <span class="menu-text">Time Tables</span>
-                        </a>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <ul class="dropdown-submenu" id="timetables-dropdown">
+                            <li class="submenu-item">
+                                <a href="timetables.html" class="submenu-link">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span class="submenu-text">Add Timetables</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="view-timetables.html" class="submenu-link">
+                                    <i class="fas fa-list-ul"></i>
+                                    <span class="submenu-text">View All</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="menu-item">
                         <a href="syllabus.html" class="menu-link">

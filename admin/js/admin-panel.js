@@ -259,6 +259,14 @@ class AdminPanel {
             link.addEventListener('click', this.boundFunctions.menuLinkClick);
         });
 
+        // Submenu links - close sidebar on mobile when clicking
+        document.querySelectorAll('.submenu-link').forEach(link => {
+            link.addEventListener('click', this.boundFunctions.menuLinkClick);
+        });
+
+        // Setup dropdown toggles
+        this.setupDropdownMenus();
+
         // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
@@ -276,6 +284,54 @@ class AdminPanel {
 
         // Form submissions
         this.setupFormListeners();
+    }
+
+    setupDropdownMenus() {
+        // Handle dropdown toggle buttons
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const dropdownId = toggle.getAttribute('data-dropdown');
+                const dropdown = document.getElementById(`${dropdownId}-dropdown`);
+
+                if (dropdown) {
+                    // Close other dropdowns
+                    document.querySelectorAll('.dropdown-submenu').forEach(menu => {
+                        if (menu !== dropdown) {
+                            menu.classList.remove('show');
+                            const otherToggle = document.querySelector(`[data-dropdown="${menu.id.replace('-dropdown', '')}"]`);
+                            if (otherToggle) {
+                                otherToggle.classList.remove('active');
+                            }
+                        }
+                    });
+
+                    // Toggle current dropdown
+                    const isOpen = dropdown.classList.contains('show');
+                    if (isOpen) {
+                        dropdown.classList.remove('show');
+                        toggle.classList.remove('active');
+                    } else {
+                        dropdown.classList.add('show');
+                        toggle.classList.add('active');
+                    }
+                }
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.has-dropdown')) {
+                document.querySelectorAll('.dropdown-submenu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+                document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                    toggle.classList.remove('active');
+                });
+            }
+        });
     }
 
     setupUserMenu() {
@@ -452,12 +508,6 @@ class AdminPanel {
     }
 
     setupFormListeners() {
-        // Timetable form
-        document.getElementById('timetableForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveTimetable();
-        });
-
         // Material form
         document.getElementById('materialForm')?.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -501,11 +551,6 @@ class AdminPanel {
             document.getElementById('courseId').value = '';
         });
 
-        document.getElementById('resetTimetableForm')?.addEventListener('click', () => {
-            document.getElementById('timetableForm').reset();
-            document.getElementById('timetableId').value = '';
-        });
-
         document.getElementById('resetMaterialForm')?.addEventListener('click', () => {
             document.getElementById('materialForm').reset();
             document.getElementById('materialId').value = '';
@@ -537,11 +582,6 @@ class AdminPanel {
     }
 
     setupAddButtons() {
-        document.getElementById('addTimetableBtn')?.addEventListener('click', () => {
-            document.getElementById('timetableForm').reset();
-            document.getElementById('timetableId').value = '';
-        });
-
         document.getElementById('addMaterialBtn')?.addEventListener('click', () => {
             document.getElementById('materialForm').reset();
             document.getElementById('materialId').value = '';
@@ -599,7 +639,6 @@ class AdminPanel {
         const pageMap = {
             'admin-panel.html': 'dashboard',
             'courses.html': 'courses',
-            'timetables.html': 'timetables',
             'syllabus.html': 'syllabus',
             'notices.html': 'notices',
             'fee-structure.html': 'fee-structure',
@@ -636,10 +675,6 @@ class AdminPanel {
                 case 'courses':
                     // Course data is handled by CourseManager
                     break;
-                case 'timetables':
-                    await this.loadTimetables();
-                    if (window.populateCourseDropdowns) await window.populateCourseDropdowns();
-                    break;
                 case 'syllabus':
                     await this.loadMaterials();
                     if (window.populateCourseDropdowns) await window.populateCourseDropdowns();
@@ -660,6 +695,11 @@ class AdminPanel {
                     break;
                 case 'students':
                     await this.loadStudents();
+                    if (window.populateCourseDropdowns) await window.populateCourseDropdowns();
+                    break;
+                case 'timetables':
+                case 'view-timetables':
+                    // Timetable data is handled by TimetablesPage
                     if (window.populateCourseDropdowns) await window.populateCourseDropdowns();
                     break;
                 case 'settings':
@@ -837,219 +877,6 @@ class AdminPanel {
 
 
 
-    // ===== TIMETABLE OPERATIONS =====
-
-    async loadTimetables() {
-        try {
-            const snapshot = await this.getCollection('timetables');
-            const timetables = [];
-
-            snapshot.forEach(doc => {
-                timetables.push({ id: doc.id, ...doc.data() });
-            });
-
-            this.renderTimetables(timetables);
-        } catch (error) {
-            console.error('Error loading timetables:', error);
-            throw error;
-        }
-    }
-
-    renderTimetables(timetables) {
-        // Initialize or update Tabulator table for timetables
-        if (!this.timetablesTable) {
-            this.initializeTimetablesTable();
-        }
-
-        // Update table data
-        this.timetablesTable.setData(timetables);
-    }
-
-    initializeTimetablesTable() {
-        const container = document.getElementById('timetablesList');
-        if (!container) return;
-
-        // Clear any existing content
-        container.innerHTML = '<div id="timetablesTable" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;"></div>';
-
-        // Initialize Tabulator table
-        this.timetablesTable = new Tabulator("#timetablesTable", {
-            height: "400px",
-            layout: "fitColumns",
-            pagination: "local",
-            paginationSize: 10,
-            paginationSizeSelector: [5, 10, 20, 50],
-            movableColumns: true,
-            resizableRows: true,
-            selectable: true,
-            placeholder: "No timetables found. Add your first timetable above.",
-            columns: [
-                {
-                    title: "Course",
-                    field: "course",
-                    width: 150,
-                    sorter: "string",
-                    headerFilter: "select",
-                    headerFilterParams: {values: true}
-                },
-                {
-                    title: "Year/Semester",
-                    field: "yearSemester",
-                    width: 120,
-                    sorter: "string",
-                    headerFilter: "select",
-                    headerFilterParams: {values: true}
-                },
-                {
-                    title: "Faculty",
-                    field: "facultyName",
-                    width: 150,
-                    sorter: "string",
-                    headerFilter: "input"
-                },
-                {
-                    title: "PDF/Image",
-                    field: "pdfImageLink",
-                    width: 120,
-                    formatter: function(cell) {
-                        const value = cell.getValue();
-                        return value ? `<a href="${value}" target="_blank" style="color: #007bff; text-decoration: none;"><i class="fas fa-external-link-alt"></i> View</a>` : '-';
-                    },
-                    headerSort: false
-                },
-                {
-                    title: "Actions",
-                    field: "actions",
-                    width: 150,
-                    formatter: (cell) => {
-                        return `
-                            <button class="btn btn-sm btn-secondary" onclick="adminPanel.editTimetable('${cell.getRow().getData().id}')" style="margin-right: 5px; padding: 4px 8px; font-size: 12px;">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="adminPanel.deleteTimetable('${cell.getRow().getData().id}')" style="padding: 4px 8px; font-size: 12px;">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        `;
-                    },
-                    headerSort: false
-                }
-            ]
-        });
-    }
-
-    async saveTimetable() {
-        try {
-            const form = document.getElementById('timetableForm');
-            const formData = new FormData(form);
-            const timetableId = formData.get('timetableId');
-
-            const timetableData = {
-                course: formData.get('course'),
-                yearSemester: formData.get('yearSemester'),
-                facultyName: formData.get('facultyName'),
-                pdfImageLink: formData.get('pdfImageLink') || '',
-                schedule: {
-                    monday: formData.get('monday') || '',
-                    tuesday: formData.get('tuesday') || '',
-                    wednesday: formData.get('wednesday') || '',
-                    thursday: formData.get('thursday') || '',
-                    friday: formData.get('friday') || '',
-                    saturday: formData.get('saturday') || ''
-                },
-                updatedAt: new Date().toISOString()
-            };
-
-            if (timetableId) {
-                await this.updateDocument('timetables', timetableId, timetableData);
-                this.showMessage('Timetable updated successfully');
-            } else {
-                timetableData.createdAt = new Date().toISOString();
-                await this.addDocument('timetables', timetableData);
-                this.showMessage('Timetable added successfully');
-            }
-
-            form.reset();
-            document.getElementById('timetableId').value = '';
-            await this.loadTimetables();
-        } catch (error) {
-            console.error('Error saving timetable:', error);
-            this.showMessage('Error saving timetable', 'error');
-        }
-    }
-
-    async editTimetable(timetableId) {
-        try {
-            const doc = await this.getDocument('timetables', timetableId);
-            if (doc.exists()) {
-                const timetable = doc.data();
-
-                document.getElementById('timetableId').value = timetableId;
-                document.getElementById('timetableCourse').value = timetable.course || '';
-                document.getElementById('yearSemester').value = timetable.yearSemester || '';
-                document.getElementById('facultyName').value = timetable.facultyName || '';
-                document.getElementById('pdfImageLink').value = timetable.pdfImageLink || '';
-
-                // Populate schedule
-                if (timetable.schedule) {
-                    document.querySelector('textarea[name="monday"]').value = timetable.schedule.monday || '';
-                    document.querySelector('textarea[name="tuesday"]').value = timetable.schedule.tuesday || '';
-                    document.querySelector('textarea[name="wednesday"]').value = timetable.schedule.wednesday || '';
-                    document.querySelector('textarea[name="thursday"]').value = timetable.schedule.thursday || '';
-                    document.querySelector('textarea[name="friday"]').value = timetable.schedule.friday || '';
-                    document.querySelector('textarea[name="saturday"]').value = timetable.schedule.saturday || '';
-                }
-
-                document.getElementById('timetableForm').scrollIntoView({ behavior: 'smooth' });
-            }
-        } catch (error) {
-            console.error('Error loading timetable for edit:', error);
-            this.showMessage('Error loading timetable', 'error');
-        }
-    }
-
-    async deleteTimetable(timetableId) {
-        const result = await Swal.fire({
-            title: 'Delete Timetable?',
-            text: 'Are you sure you want to delete this timetable?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-            background: '#fff',
-            color: '#333'
-        });
-
-        if (result.isConfirmed) {
-            try {
-                await this.deleteDocument('timetables', timetableId);
-                this.showMessage('Timetable deleted successfully');
-                await this.loadTimetables();
-
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'Timetable has been deleted successfully.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    background: '#fff',
-                    color: '#333'
-                });
-            } catch (error) {
-                console.error('Error deleting timetable:', error);
-                this.showMessage('Error deleting timetable', 'error');
-
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Failed to delete timetable. Please try again.',
-                    icon: 'error',
-                    background: '#fff',
-                    color: '#333'
-                });
-            }
-        }
-    }
 
     // ===== MATERIALS OPERATIONS =====
 
@@ -2462,7 +2289,7 @@ class AdminPanel {
             }
 
             // Calculate total records
-            const collections = ['courses', 'students', 'faculty', 'notices', 'materials', 'timetables', 'fees'];
+            const collections = ['courses', 'students', 'faculty', 'notices', 'materials', 'fees'];
             let totalRecords = 0;
 
             for (const collection of collections) {
@@ -2522,7 +2349,7 @@ class AdminPanel {
         try {
             this.showMessage('Preparing export...', 'info');
 
-            const collections = ['courses', 'students', 'faculty', 'notices', 'materials', 'timetables', 'fees'];
+            const collections = ['courses', 'students', 'faculty', 'notices', 'materials', 'fees'];
             const exportData = {};
 
             for (const collectionName of collections) {
@@ -2599,7 +2426,7 @@ class AdminPanel {
         try {
             this.showMessage('Creating backup...', 'info');
 
-            const collections = ['courses', 'students', 'faculty', 'notices', 'materials', 'timetables', 'fees'];
+            const collections = ['courses', 'students', 'faculty', 'notices', 'materials', 'fees'];
             const backupData = {
                 timestamp: new Date().toISOString(),
                 version: '2.0',
@@ -2938,7 +2765,6 @@ class AdminPanel {
         const pageTitles = {
             'dashboard': 'Dashboard Overview',
             'courses': 'Course Management',
-            'timetables': 'Time Table Management',
             'syllabus': 'Syllabus & Materials',
             'notices': 'Notice Management',
             'fee-structure': 'Fee Structure Management',

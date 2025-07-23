@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courses Management - BitBot Admin | Bhagwant Institute of Technology</title>
+    <title>View All Timetables - BitBot Admin | Bhagwant Institute of Technology</title>
 
     <!-- Favicon -->
     <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
@@ -80,7 +80,7 @@
                             <span class="menu-text">Dashboard</span>
                         </a>
                     </li>
-                    <li class="menu-item has-submenu active">
+                    <li class="menu-item has-submenu">
                         <a href="#" class="menu-link">
                             <i class="fas fa-graduation-cap"></i>
                             <span class="menu-text">Courses</span>
@@ -88,7 +88,7 @@
                         </a>
                         <ul class="submenu">
                             <li class="submenu-item">
-                                <a href="courses.html" class="submenu-link active">
+                                <a href="courses.html" class="submenu-link">
                                     <i class="fas fa-plus-circle"></i>
                                     <span class="submenu-text">Add Courses</span>
                                 </a>
@@ -101,7 +101,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="menu-item has-submenu">
+                    <li class="menu-item has-submenu active">
                         <a href="#" class="menu-link">
                             <i class="fas fa-calendar-alt"></i>
                             <span class="menu-text">Time Tables</span>
@@ -115,8 +115,8 @@
                                 </a>
                             </li>
                             <li class="submenu-item">
-                                <a href="view-timetables.html" class="submenu-link">
-                                    <i class="fas fa-list-ul"></i>
+                                <a href="view-timetables.html" class="submenu-link active">
+                                    <i class="fas fa-list"></i>
                                     <span class="submenu-text">View All</span>
                                 </a>
                             </li>
@@ -158,8 +158,6 @@
                             <span class="menu-text">Students</span>
                         </a>
                     </li>
-
-
                 </ul>
             </div>
         </nav>
@@ -175,115 +173,169 @@
                 <span>Loading...</span>
             </div>
 
-
-
-            <!-- Courses Section -->
-            <section id="courses-section" class="content-section active">
+            <!-- View Timetables Section -->
+            <section id="view-timetables-section" class="content-section active">
                 <div class="section-header">
-                    <h1 class="section-title course-title">Course Management</h1>
+                    <h1 class="section-title course-title">View Timetables</h1>
                     <div class="section-actions course-actions">
-                        <button class="btn-import-courses" id="bulkImportBtn">
+                        <button class="btn-import-courses" id="importTimetablesBtn">
                             <i class="fas fa-upload"></i>
-                            Bulk Import CSV
+                            Import Timetables
                         </button>
-                        <button class="btn-export-courses" id="bulkExportBtn">
+                        <button class="btn-export-courses" id="exportTimetablesBtn">
                             <i class="fas fa-download"></i>
-                            Bulk Export CSV
+                            Export Timetables
                         </button>
-                        <a href="all-courses.html" class="btn-view-courses">
-                            <i class="fas fa-eye"></i>
-                            View All Courses
+                        <a href="timetables.html" class="btn-view-courses">
+                            <i class="fas fa-plus"></i>
+                            Add New Timetable
                         </a>
                     </div>
                 </div>
 
+                <!-- Timetable Filter Section -->
                 <div class="content-grid full-width">
                     <div class="course-form-container">
                         <div class="course-form-header">
                             <h3 class="course-form-title">
-                                <i class="fas fa-plus-circle"></i>
-                                Course Information
+                                <i class="fas fa-filter"></i>
+                                Filter Timetables
                             </h3>
                         </div>
                         <div class="course-form-content">
-                            <form id="courseForm" class="modern-form">
-                                <input type="hidden" id="courseId" name="courseId">
-
-                                <div class="course-form-grid">
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="courseName">📚 Course Name *</label>
-                                        <input class="course-form-input" type="text" id="courseName" name="courseName" placeholder="e.g., BCA, B.Tech" required minlength="2" maxlength="100">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="department">🏢 Department *</label>
-                                        <input class="course-form-input" type="text" id="department" name="department" placeholder="e.g., Computer Applications, Computer Science" required minlength="2" maxlength="100">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="courseAffiliation">🏛️ Course Affiliation *</label>
-                                        <input class="course-form-input" type="text" id="courseAffiliation" name="courseAffiliation" placeholder="e.g., AKTU, CCSU" required minlength="2" maxlength="50">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="duration">⏱️ Duration *</label>
-                                        <input class="course-form-input" type="text" id="duration" name="duration" placeholder="e.g., 3 years" required minlength="1" maxlength="20">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="totalSeats">👥 Total Seats *</label>
-                                        <input class="course-form-input" type="number" id="totalSeats" name="totalSeats" placeholder="e.g., 60" required min="1" max="1000">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="feeStructure">💰 Fee Structure (₹ per semester) *</label>
-                                        <input class="course-form-input" type="text" id="feeStructure" name="feeStructure" placeholder="e.g., ₹25,000" required minlength="1" maxlength="50">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="otherFee">➕ Other Fee (Optional)</label>
-                                        <input class="course-form-input" type="text" id="otherFee" name="otherFee" placeholder="e.g., ₹2,000 stationary" maxlength="100">
-                                    </div>
-
-                                    <div class="course-form-group" style="grid-column: 1 / -1;">
-                                        <label class="course-form-label" for="scholarshipOpportunities">🎓 Scholarship Opportunities</label>
-                                        <textarea class="course-form-textarea" id="scholarshipOpportunities" name="scholarshipOpportunities" rows="3" placeholder="e.g., UP Government Scholarship / Merit-based / None" maxlength="500"></textarea>
-                                    </div>
-
-                                    <div class="course-form-group" style="grid-column: 1 / -1;">
-                                        <label class="course-form-label" for="admissionEligibility">📋 Admission Eligibility</label>
-                                        <textarea class="course-form-textarea" id="admissionEligibility" name="admissionEligibility" rows="3" placeholder="e.g., 12th Pass with 45% marks (PCM/Arts/Commerce)" maxlength="500"></textarea>
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="hodName">👨‍💼 HOD Name *</label>
-                                        <input class="course-form-input" type="text" id="hodName" name="hodName" placeholder="e.g., Dr. Ajay Singh" required minlength="2" maxlength="100">
-                                    </div>
-
-                                    <div class="course-form-group">
-                                        <label class="course-form-label" for="counsellor">👩‍🏫 Course Counsellor</label>
-                                        <input class="course-form-input" type="text" id="counsellor" name="counsellor" placeholder="e.g., Ms. Urvashi Chaudhary" maxlength="100">
-                                    </div>
+                            <div class="filter-container" style="display: flex; gap: 20px; margin-bottom: 20px; align-items: end;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="courseFilter">Select Course:</label>
+                                    <select id="courseFilter" class="form-control" required>
+                                        <option value="">-- Select Course --</option>
+                                    </select>
                                 </div>
-
-                                <div class="course-form-actions">
-                                    <button type="submit" class="btn-save-course">
-                                        <i class="fas fa-save"></i>
-                                        Save Course
-                                    </button>
-                                    <button type="button" class="btn-reset-course" id="resetCourseBtn">
-                                        <i class="fas fa-undo"></i>
-                                        Reset Form
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="semesterFilter">Select Semester:</label>
+                                    <select id="semesterFilter" class="form-control" disabled>
+                                        <option value="">-- Select Semester --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" id="clearFiltersBtn" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Clear Filters
                                     </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
 
-
+                    <!-- Timetables Display Section -->
+                    <div class="course-form-container" id="timetablesDisplayContainer" style="display: none;">
+                        <div class="course-form-header">
+                            <h3 class="course-form-title" id="timetableDisplayTitle">
+                                <i class="fas fa-table"></i>
+                                Timetable Entries
+                            </h3>
+                        </div>
+                        <div class="course-form-content">
+                            <div class="data-list" id="timetablesList">
+                                <!-- Timetables will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Edit Timetable Modal -->
+    <div id="editTimetableModal" class="course-modal-overlay" style="display: none;">
+        <div class="course-modal-content" style="max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div class="course-modal-header">
+                <h3 class="course-modal-title">✏️ Edit Timetable Entry</h3>
+                <button class="course-modal-close" onclick="TimetablesPage.closeEditModal()">&times;</button>
+            </div>
+            <div class="course-modal-body">
+                <form id="editTimetableForm">
+                    <input type="hidden" id="editTimetableId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editCourse">Course:</label>
+                            <select id="editCourse" class="form-control" required>
+                                <option value="">-- Select Course --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editSemester">Semester:</label>
+                            <select id="editSemester" class="form-control" required>
+                                <option value="">-- Select Semester --</option>
+                                <option value="1">1st Semester</option>
+                                <option value="2">2nd Semester</option>
+                                <option value="3">3rd Semester</option>
+                                <option value="4">4th Semester</option>
+                                <option value="5">5th Semester</option>
+                                <option value="6">6th Semester</option>
+                                <option value="7">7th Semester</option>
+                                <option value="8">8th Semester</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editRoomNo">Room No:</label>
+                            <input type="text" id="editRoomNo" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDay">Day:</label>
+                            <select id="editDay" class="form-control" required>
+                                <option value="">-- Select Day --</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editLecture">Lecture:</label>
+                            <select id="editLecture" class="form-control" required>
+                                <option value="">-- Select Lecture --</option>
+                                <option value="1">1st Lecture</option>
+                                <option value="2">2nd Lecture</option>
+                                <option value="3">3rd Lecture</option>
+                                <option value="4">4th Lecture</option>
+                                <option value="5">5th Lecture</option>
+                                <option value="6">6th Lecture</option>
+                                <option value="7">7th Lecture</option>
+                                <option value="8">8th Lecture</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editTime">Time:</label>
+                            <input type="text" id="editTime" class="form-control" placeholder="e.g., 9:00 AM - 10:00 AM" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editSubject">Subject:</label>
+                            <input type="text" id="editSubject" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editFaculty">Faculty:</label>
+                            <input type="text" id="editFaculty" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="TimetablesPage.closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Timetable</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript Libraries -->
@@ -296,8 +348,8 @@
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 
-    <!-- PapaParse JS for CSV handling -->
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <!-- PapaParse for CSV handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <!-- Firebase SDK -->
     <script src="js/firebase-config.js"></script>
@@ -305,32 +357,11 @@
 
     <!-- Admin Panel JavaScript -->
     <script src="js/admin-panel.js"></script>
+    
+    <!-- Courses JavaScript (includes timetable dropdown functionality) -->
     <script src="js/courses.js"></script>
 
-    <script>
-        // Initialize the admin panel for courses page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Use singleton pattern to prevent duplicate instances
-            if (!AdminPanel.getInstance()) {
-                window.adminPanel = new AdminPanel();
-                window.adminPanel.currentPage = 'courses';
-            } else {
-                window.adminPanel = AdminPanel.getInstance();
-                window.adminPanel.currentPage = 'courses';
-                console.log('Using existing AdminPanel instance for courses');
-            }
-
-            // Handle edit parameters from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('edit')) {
-                // Wait for course manager to be ready
-                setTimeout(() => {
-                    if (window.courseManager) {
-                        window.courseManager.populateFormFromParams(urlParams);
-                    }
-                }, 500);
-            }
-        });
-    </script>
+    <!-- Timetables JavaScript (handles both add and view functionality) -->
+    <script src="js/timetables.js"></script>
 </body>
 </html>
