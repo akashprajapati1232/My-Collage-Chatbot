@@ -5,7 +5,7 @@ const chatMessages = document.getElementById('chatMessages');
 const typingIndicator = document.getElementById('typingIndicator');
 const themeToggle = document.getElementById('themeToggle');
 
-// Bot responses will be handled by Firebase-connected query system
+// Bot responses will be handled by mock query system
 
 // Message queue for chatbot notifications
 let chatbotMessageQueue = [];
@@ -239,8 +239,8 @@ function handleSendMessage() {
                 showToast('Data loaded successfully!', 'success');
             }
         } else {
-            // Default response - will be replaced with Firebase-connected responses
-            addMessage("I'm here to help! Please connect to Firebase to enable full functionality.");
+            // Default response - mock functionality
+            addMessage("I'm here to help! This is a demo version with mock data.");
         }
     }, responseDelay);
 }

@@ -221,12 +221,12 @@ class CourseManager {
 
             if (isUpdate) {
                 // Update existing course
-                await this.updateDocument('courses', courseId, courseData);
+                await this.updateData('courses', courseId, courseData);
                 this.showMessage('Course updated successfully', 'success');
             } else {
                 // Add new course
                 courseData.createdAt = new Date().toISOString();
-                await this.addDocument('courses', courseData);
+                await this.saveData('courses', courseData);
                 this.showMessage('Course added successfully', 'success');
             }
 
@@ -385,7 +385,7 @@ class CourseManager {
 
         } catch (error) {
             console.error('Error showing courses modal:', error);
-            this.showMessage('Error loading courses', 'error');
+            this.showMessage('No courses available to display', 'info');
         }
     }
 
@@ -421,7 +421,7 @@ class CourseManager {
                 // Show immediate feedback
                 this.showMessage('Deleting course...', 'info');
 
-                await this.deleteDocument('courses', courseId);
+                await this.deleteData('courses', courseId);
                 this.showMessage('Course deleted successfully', 'success');
 
                 // Refresh the modal in background
@@ -437,11 +437,13 @@ class CourseManager {
 
     async loadCourses() {
         try {
-            this.courses = await this.getDocuments('courses');
+            this.courses = await this.loadData('courses');
             await this.populateCourseDropdowns();
+            console.log(`Loaded ${this.courses.length} courses`);
         } catch (error) {
             console.error('Error loading courses:', error);
-            this.showMessage('Error loading courses', 'error');
+            // Don't show error message for initial load - just log it
+            this.courses = [];
         }
     }
 
@@ -451,7 +453,8 @@ class CourseManager {
             'materialCourse',
             'feeCourse',
             'studentCourse',
-            'noticeCourses'
+            'noticeCourses',
+            'syllabusCourse'
         ];
 
         dropdowns.forEach(dropdownId => {
@@ -478,37 +481,32 @@ class CourseManager {
 
 
     // Utility methods that delegate to AdminPanel instance
-    async getDocuments(collection) {
-        if (window.adminPanel && window.adminPanel.getCollection) {
-            const snapshot = await window.adminPanel.getCollection(collection);
-            const documents = [];
-            snapshot.forEach(doc => {
-                documents.push({ id: doc.id, ...doc.data() });
-            });
-            return documents;
+    async loadData(collection) {
+        if (window.adminPanel && window.adminPanel.loadData) {
+            return await window.adminPanel.loadData(collection);
         }
         return [];
     }
 
-    async addDocument(collection, data) {
-        if (window.adminPanel && window.adminPanel.addDocument) {
-            return await window.adminPanel.addDocument(collection, data);
+    async saveData(collection, data) {
+        if (window.adminPanel && window.adminPanel.saveData) {
+            return await window.adminPanel.saveData(collection, data);
         }
-        console.log('Adding document to', collection, data);
+        console.log('Saving data to', collection, data);
     }
 
-    async updateDocument(collection, id, data) {
-        if (window.adminPanel && window.adminPanel.updateDocument) {
-            return await window.adminPanel.updateDocument(collection, id, data);
+    async updateData(collection, id, data) {
+        if (window.adminPanel && window.adminPanel.updateData) {
+            return await window.adminPanel.updateData(collection, id, data);
         }
-        console.log('Updating document in', collection, id, data);
+        console.log('Updating data in', collection, id, data);
     }
 
-    async deleteDocument(collection, id) {
-        if (window.adminPanel && window.adminPanel.deleteDocument) {
-            return await window.adminPanel.deleteDocument(collection, id);
+    async deleteData(collection, id) {
+        if (window.adminPanel && window.adminPanel.deleteData) {
+            return await window.adminPanel.deleteData(collection, id);
         }
-        console.log('Deleting document from', collection, id);
+        console.log('Deleting data from', collection, id);
     }
 
     showMessage(message, type = 'success') {
@@ -667,7 +665,8 @@ class CourseManager {
 
         } catch (error) {
             console.error('Error initializing courses table:', error);
-            this.showMessage('Error loading courses table', 'error');
+            // Don't show error message for initial table load - just log it
+            console.log('Courses table will be empty until courses are added');
         }
     }
 
@@ -923,7 +922,7 @@ class CourseManager {
             submitBtn.disabled = true;
 
             // Update course in database
-            await this.updateDocument('courses', courseData.courseId, courseData);
+            await this.updateData('courses', courseData.courseId, courseData);
 
             // Show success message
             this.showMessage('Course updated successfully!', 'success');
@@ -985,7 +984,7 @@ class CourseManager {
                 // Show immediate feedback
                 this.showMessage('Deleting course...', 'info');
 
-                await this.deleteDocument('courses', courseId);
+                await this.deleteData('courses', courseId);
                 this.showMessage('Course deleted successfully', 'success');
 
                 // Refresh the table in background
@@ -1198,8 +1197,8 @@ class CourseManager {
                         continue;
                     }
 
-                    // Save to Firestore
-                    await this.addDocument('courses', cleanCourseData);
+                    // Save to localStorage
+                    await this.saveData('courses', cleanCourseData);
                     successCount++;
 
                 } catch (error) {

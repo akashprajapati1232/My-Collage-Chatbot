@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Faculty - BitBot Admin | Bhagwant Institute of Technology</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/admin-panel.css">
+    <link rel="stylesheet" href="css/library-theme.css">
+    <link rel="stylesheet" href="css/faculty.css">
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="css/navside.css">
+
+</head>
+<body class="light-theme">
+    <!-- Dynamic Navbar Container -->
+    <div id="navbar"></div>
+
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading...</span>
+            </div>
+
+            <!-- View Faculty Section -->
+            <section id="view-faculty-section" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title faculty-title">View All Faculty</h1>
+                    <div class="section-actions faculty-actions">
+                        <button class="btn-import-courses" id="importFacultyBtn">
+                            <i class="fas fa-upload"></i>
+                            Import Faculty
+                        </button>
+                        <button class="btn-export-courses" id="exportFacultyBtn">
+                            <i class="fas fa-download"></i>
+                            Export Faculty
+                        </button>
+                        <a href="faculty.html" class="btn-add-course">
+                            <i class="fas fa-plus"></i>
+                            Add New Faculty
+                        </a>
+                    </div>
+                </div>
+
+                <div class="content-grid full-width">
+                    <div class="all-courses-container">
+                        <div class="all-courses-header">
+                            <h3 class="all-courses-title">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                Faculty Management
+                            </h3>
+                            <div class="courses-stats">
+                                <span class="stat-item">
+                                    <i class="fas fa-users"></i>
+                                    Total: <span id="totalFacultyCount">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="all-courses-content">
+                            <div id="facultyTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    <!-- Edit Faculty Modal -->
+    <div id="editFacultyModal" class="faculty-edit-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Edit Faculty Information</h3>
+                <button class="modal-close" onclick="closeEditFacultyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editFacultyForm">
+                    <input type="hidden" id="editFacultyId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editDepartment">Department:</label>
+                            <input type="text" id="editDepartment" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editHodName">HOD Name:</label>
+                            <input type="text" id="editHodName" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Faculty Members:</label>
+                        <div id="editFacultyMembersList">
+                            <!-- Faculty members will be populated here -->
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="addEditFacultyMember()">
+                            <i class="fas fa-plus"></i> Add Faculty Member
+                        </button>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel-faculty" onclick="closeEditFacultyModal()">Cancel</button>
+                        <button type="submit" class="btn-save-faculty">Update Faculty</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <!-- PapaParse for CSV handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- Admin Panel JavaScript -->
+    <script src="js/admin-panel.js"></script>
+
+    <!-- Courses JavaScript (includes dropdown functionality) -->
+    <script src="js/courses.js"></script>
+
+    <!-- Faculty JavaScript (handles both add and view functionality) -->
+    <script src="js/faculty.js"></script>
+
+    <script>
+        // Initialize view faculty page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('View Faculty page loaded');
+
+            // Initialize admin panel
+            if (window.AdminPanel) {
+                window.adminPanel = new AdminPanel();
+                window.adminPanel.currentPage = 'view-faculty';
+            }
+
+            // Initialize view faculty functionality
+            if (window.ViewFacultyPage) {
+                window.ViewFacultyPage.initializeViewFacultyPage();
+            }
+        });
+
+        // Global functions for faculty operations
+        function editFaculty(facultyId) {
+            if (window.viewFacultyManager) {
+                window.viewFacultyManager.editFaculty(facultyId);
+            }
+        }
+
+        function deleteFaculty(facultyId) {
+            if (window.viewFacultyManager) {
+                window.viewFacultyManager.deleteFaculty(facultyId);
+            }
+        }
+
+        function closeEditFacultyModal() {
+            document.getElementById('editFacultyModal').style.display = 'none';
+        }
+
+        function addEditFacultyMember() {
+            if (window.viewFacultyManager) {
+                window.viewFacultyManager.addEditFacultyMember();
+            }
+        }
+    </script>
+    <!-- Navbar JavaScript -->
+    <script src="js/navside.js"></script>
+
+</body>
+</html>

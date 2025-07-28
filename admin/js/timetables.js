@@ -212,7 +212,7 @@ async function loadCoursesForFilter() {
         }
 
         console.log('Loading courses for filter...');
-        const courses = await getDocuments('courses');
+        const courses = await loadData('courses');
         console.log('Loaded courses:', courses);
 
         const courseFilter = document.getElementById('courseFilter');
@@ -237,7 +237,7 @@ async function loadCoursesForFilter() {
 async function loadSemestersForCourse(courseName) {
     try {
         console.log('Loading semesters for course:', courseName);
-        const timetables = await getDocuments('timetables');
+        const timetables = await loadData('timetables');
         console.log('All timetables for semester loading:', timetables);
 
         const semesterFilter = document.getElementById('semesterFilter');
@@ -285,7 +285,7 @@ async function loadTimetablesByCourseAndSemester(courseName, semester) {
             return;
         }
 
-        const allTimetables = await getDocuments('timetables');
+        const allTimetables = await loadData('timetables');
         console.log('All timetables:', allTimetables);
 
         // Filter timetables - check both string and number comparison for semester
@@ -405,7 +405,7 @@ async function loadTimetables() {
     try {
         // Only load all timetables if we're on the timetables.html page (not view-timetables)
         if (!window.location.pathname.includes('view-timetables')) {
-            const timetables = await getDocuments('timetables');
+            const timetables = await loadData('timetables');
             renderTimetables(timetables);
         }
     } catch (error) {
@@ -594,11 +594,11 @@ async function saveTimetable() {
         };
 
         if (timetableId) {
-            await updateDocument('timetables', timetableId, timetableData);
+            await updateData('timetables', timetableId, timetableData);
             showMessage('Timetable updated successfully');
         } else {
             timetableData.createdAt = new Date().toISOString();
-            await addDocument('timetables', timetableData);
+            await saveData('timetables', timetableData);
             showMessage('Timetable added successfully');
         }
 
@@ -613,7 +613,7 @@ async function saveTimetable() {
 // Edit timetable
 async function editTimetable(timetableId) {
     try {
-        const doc = await getDocument('timetables', timetableId);
+        const doc = await getData('timetables', timetableId);
         if (doc.exists()) {
             const timetable = doc.data();
 
@@ -659,7 +659,7 @@ async function deleteTimetable(timetableId) {
 
     if (result.isConfirmed) {
         try {
-            await deleteDocument('timetables', timetableId);
+            await deleteData('timetables', timetableId);
             showMessage('Timetable deleted successfully');
             await loadTimetables();
 
@@ -796,7 +796,7 @@ async function loadCoursesForEditModal() {
             return;
         }
 
-        const courses = await getDocuments('courses');
+        const courses = await loadData('courses');
         const editCourseSelect = document.getElementById('editCourse');
 
         if (editCourseSelect && courses.length > 0) {
@@ -861,7 +861,7 @@ async function updateTimetable() {
             updatedAt: new Date().toISOString()
         };
 
-        await updateDocument('timetables', timetableId, timetableData);
+        await updateData('timetables', timetableId, timetableData);
         showMessage('Timetable updated successfully');
 
         // Close modal
@@ -1046,7 +1046,7 @@ async function processBulkImport(timetables) {
                 };
 
                 // Add to database
-                await addDocument('timetables', timetableData);
+                await saveData('timetables', timetableData);
                 successCount++;
 
             } catch (error) {
@@ -1096,7 +1096,7 @@ async function processBulkImport(timetables) {
 async function bulkExportCSV() {
     try {
         // Load fresh timetables data
-        const timetables = await getDocuments('timetables');
+        const timetables = await loadData('timetables');
 
         if (timetables.length === 0) {
             showMessage('No timetables to export', 'warning');
@@ -1171,18 +1171,14 @@ async function bulkExportCSV() {
 // ===== UTILITY FUNCTIONS (SIMILAR TO COURSES.JS) =====
 
 // Utility methods that delegate to AdminPanel instance
-async function getDocuments(collection) {
-    if (window.adminPanel && window.adminPanel.getCollection) {
+async function loadData(collection) {
+    if (window.adminPanel && window.adminPanel.loadData) {
         try {
-            const snapshot = await window.adminPanel.getCollection(collection);
-            const documents = [];
-            snapshot.forEach(doc => {
-                documents.push({ id: doc.id, ...doc.data() });
-            });
-            console.log(`Loaded ${documents.length} documents from ${collection}`);
-            return documents;
+            const data = await window.adminPanel.loadData(collection);
+            console.log(`Loaded ${data.length} items from ${collection}`);
+            return data;
         } catch (error) {
-            console.error(`Error getting documents from ${collection}:`, error);
+            console.error(`Error loading data from ${collection}:`, error);
             throw error;
         }
     }
@@ -1190,40 +1186,35 @@ async function getDocuments(collection) {
     return [];
 }
 
-async function getDocument(collection, id) {
-    if (window.adminPanel && window.adminPanel.getDocument) {
-        return await window.adminPanel.getDocument(collection, id);
+async function getData(collection, id) {
+    if (window.adminPanel && window.adminPanel.loadData) {
+        const data = await window.adminPanel.loadData(collection);
+        const item = data.find(item => item.id === id);
+        return item ? { exists: () => true, data: () => item } : { exists: () => false };
     }
-    console.log('Getting document from', collection, id);
+    console.log('Getting data from', collection, id);
     return { exists: () => false };
 }
 
-async function addDocument(collection, data) {
-    if (window.adminPanel && window.adminPanel.addDocument) {
-        return await window.adminPanel.addDocument(collection, data);
+async function saveData(collection, data) {
+    if (window.adminPanel && window.adminPanel.saveData) {
+        return await window.adminPanel.saveData(collection, data);
     }
-    console.log('Adding document to', collection, data);
+    console.log('Saving data to', collection, data);
 }
 
-async function updateDocument(collection, id, data) {
-    if (window.adminPanel && window.adminPanel.updateDocument) {
-        return await window.adminPanel.updateDocument(collection, id, data);
+async function updateData(collection, id, data) {
+    if (window.adminPanel && window.adminPanel.updateData) {
+        return await window.adminPanel.updateData(collection, id, data);
     }
-    console.log('Updating document in', collection, id, data);
+    console.log('Updating data in', collection, id, data);
 }
 
-async function updateDocument(collection, id, data) {
-    if (window.adminPanel && window.adminPanel.updateDocument) {
-        return await window.adminPanel.updateDocument(collection, id, data);
+async function deleteData(collection, id) {
+    if (window.adminPanel && window.adminPanel.deleteData) {
+        return await window.adminPanel.deleteData(collection, id);
     }
-    console.log('Updating document in', collection, id, data);
-}
-
-async function deleteDocument(collection, id) {
-    if (window.adminPanel && window.adminPanel.deleteDocument) {
-        return await window.adminPanel.deleteDocument(collection, id);
-    }
-    console.log('Deleting document from', collection, id);
+    console.log('Deleting data from', collection, id);
 }
 
 function showMessage(message, type = 'success') {

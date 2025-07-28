@@ -1,4 +1,4 @@
-// ===== FIREBASE AUTHENTICATION SYSTEM =====
+// ===== MOCK AUTHENTICATION SYSTEM =====
 
 // Helper function to get relative paths based on current page location
 function getRelativePath(targetPath) {
@@ -19,8 +19,6 @@ function getRelativePath(targetPath) {
     }
 }
 
-// Firebase service is used instead of direct imports
-
 // Page detection utility
 function getPageType() {
     const currentPage = window.location.pathname;
@@ -34,69 +32,78 @@ function getPageType() {
     };
 }
 
-// Initialize Firebase Auth functions when available
-function initializeFirebaseAuth() {
-    // Use the Firebase service instead of separate initialization
-    if (window.firebaseService) {
-        console.log('Using Firebase service for authentication');
-        const pageType = getPageType();
+// Mock Authentication System
+class MockAuth {
+    constructor() {
+        this.currentUser = null;
+        this.init();
+    }
 
+    init() {
+        // Check if user is already logged in
+        const savedUser = localStorage.getItem('mockUser');
+        if (savedUser) {
+            this.currentUser = JSON.parse(savedUser);
+        }
+
+        const pageType = getPageType();
         console.log('Page type:', pageType);
 
         // Set up auth state listener based on page type
         if (shouldSetupAuthListener()) {
-            console.log('Setting up auth state listener');
-            setupAuthStateListener();
+            console.log('Setting up mock auth state listener');
+            this.setupAuthStateListener();
         } else {
             console.log('Skipping auth state listener setup for this page type');
         }
-    } else {
-        // Retry after a short delay
-        setTimeout(initializeFirebaseAuth, 100);
+    }
+
+    async signIn(email, password) {
+        // Mock sign in - accept any email/password combination
+        const mockUser = {
+            uid: 'mock-user-id',
+            email: email,
+            displayName: email.split('@')[0],
+            emailVerified: true
+        };
+
+        this.currentUser = mockUser;
+        localStorage.setItem('mockUser', JSON.stringify(mockUser));
+
+        console.log('Mock user signed in:', email);
+        return mockUser;
+    }
+
+    async signOut() {
+        this.currentUser = null;
+        localStorage.removeItem('mockUser');
+        console.log('Mock user signed out');
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
+    isAuthenticated() {
+        return !!this.currentUser;
+    }
+
+    setupAuthStateListener() {
+        // Mock auth state listener
+        const pageType = getPageType();
+
+        if (this.currentUser) {
+            handleAuthenticatedUser(this.currentUser);
+        } else {
+            handleUnauthenticatedUser();
+        }
     }
 }
+
+// Initialize mock auth system
+const mockAuth = new MockAuth();
 
 // ===== AUTHENTICATION STATE MANAGEMENT =====
-
-async function setupAuthStateListener() {
-    try {
-        const firebaseService = window.firebaseService;
-        await firebaseService.initialize();
-
-        let isHandlingAuthChange = false;
-
-        // Set up auth state listener using Firebase service
-        firebaseService.onAuthStateChanged(async (user) => {
-            // Prevent multiple simultaneous auth state changes
-            if (isHandlingAuthChange) {
-                console.log('Auth state change already in progress, skipping...');
-                return;
-            }
-
-            isHandlingAuthChange = true;
-
-            try {
-                console.log('Auth state changed:', user ? `User: ${user.email}` : 'No user');
-
-                if (user) {
-                    // User is signed in via Firebase
-                    await handleAuthenticatedUser(user);
-                } else {
-                    // User is not signed in, handle unauthenticated state
-                    handleUnauthenticatedUser();
-                }
-            } catch (error) {
-                console.error('Error handling auth state change:', error);
-            } finally {
-                isHandlingAuthChange = false;
-            }
-        });
-    } catch (error) {
-        console.error('Error setting up auth state listener:', error);
-    }
-}
-
-// Removed localStorage session checking - now using only Firebase Authentication
 
 async function handleAuthenticatedUser(user) {
     const { isPublicPage } = getPageType();
@@ -228,17 +235,10 @@ async function performCompleteLogout() {
         // Clear all session data
         clearAllSessionData();
 
-        // Sign out from Firebase
-        const firebaseService = window.firebaseService;
-        if (firebaseService) {
-            try {
-                await firebaseService.initialize();
-                await firebaseService.signOut();
-                console.log('Firebase logout successful');
-            } catch (firebaseError) {
-                console.warn('Firebase logout error:', firebaseError);
-                // Continue with logout even if Firebase fails
-            }
+        // Sign out from mock auth
+        if (mockAuth) {
+            await mockAuth.signOut();
+            console.log('Mock logout successful');
         }
 
         return true;
@@ -296,15 +296,8 @@ async function protectPage() {
     try {
         console.log('Protecting page - checking authentication...');
 
-        // Initialize Firebase service with retry
-        const firebaseService = window.firebaseService;
-        await firebaseService.ensureReady();
-
-        // Wait for authentication state to be established with longer timeout
-        const currentUser = await firebaseService.waitForAuthReady(15000);
-
-        if (!currentUser) {
-            // No authenticated user, show admin login popup
+        // Check if user is authenticated with mock auth
+        if (!mockAuth.isAuthenticated()) {
             console.log('No authenticated user found, showing login popup');
             if (typeof openLoginPopup === 'function') {
                 openLoginPopup('admin');
@@ -312,38 +305,10 @@ async function protectPage() {
             return;
         }
 
+        const currentUser = mockAuth.getCurrentUser();
         console.log('User authenticated:', currentUser.email);
 
-        // Check if user is admin with retry logic
-        let adminData = null;
-        let adminCheckAttempts = 0;
-        const maxAdminCheckAttempts = 3;
-
-        while (adminCheckAttempts < maxAdminCheckAttempts && !adminData) {
-            try {
-                adminData = await firebaseService.getAdminByUid(currentUser.uid);
-                if (adminData) {
-                    break;
-                }
-            } catch (error) {
-                console.warn(`Admin check attempt ${adminCheckAttempts + 1} failed:`, error);
-                adminCheckAttempts++;
-                if (adminCheckAttempts < maxAdminCheckAttempts) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-            }
-        }
-
-        if (!adminData) {
-            // User exists but is not an admin or admin check failed
-            console.warn('User is not an admin or admin verification failed:', currentUser.email);
-            if (typeof openLoginPopup === 'function') {
-                openLoginPopup('admin');
-            }
-            return;
-        }
-
-        // User is authenticated and is an admin
+        // Mock admin check - all authenticated users are considered admins
         console.log('Admin access granted:', currentUser.email);
 
     } catch (error) {
@@ -354,12 +319,13 @@ async function protectPage() {
     }
 }
 
-// Using Firebase service waitForAuthReady method instead
+// Mock authentication system - no external dependencies
 
 // ===== PUBLIC CHATBOT FUNCTIONALITY =====
 
 function initializePublicChatbot() {
-    initializeFirebaseAuth();
+    // Initialize mock auth
+    mockAuth.setupAuthStateListener();
 
     // Set up login button functionality
     const loginBtn = document.getElementById('loginBtn');
@@ -601,20 +567,15 @@ async function handlePopupStudentLogin(email, dob) {
     hidePopupError();
 
     try {
-        const firebaseService = window.firebaseService;
-        await firebaseService.initialize();
-
-        // Validate student credentials
-        const student = await firebaseService.getStudentByEmail(email);
-
-        if (!student) {
-            throw new Error('Student not found. Please check your email address.');
-        }
-
-        // Validate date of birth
-        if (student.dateOfBirth !== dob) {
-            throw new Error('Invalid date of birth. Please check your information.');
-        }
+        // Mock student validation - accept any email/dob combination
+        const student = {
+            id: 'mock-student-id',
+            email: email,
+            name: email.split('@')[0],
+            dateOfBirth: dob,
+            course: 'BCA',
+            year: '2nd Year'
+        };
 
         // Create session token
         const sessionToken = btoa(JSON.stringify({
@@ -650,11 +611,8 @@ async function handlePopupAdminLogin(email, password) {
     hidePopupError();
 
     try {
-        const firebaseService = window.firebaseService;
-        await firebaseService.initialize();
-
-        // Sign in with Firebase
-        await firebaseService.signInAdmin(email, password);
+        // Mock admin login - accept any email/password combination
+        await mockAuth.signIn(email, password);
 
         // Close popup and redirect to admin panel
         closeLoginPopup();

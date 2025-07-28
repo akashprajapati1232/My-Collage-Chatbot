@@ -30,111 +30,13 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/admin-panel.css">
     <link rel="stylesheet" href="css/library-theme.css">
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="css/navside.css">
+
 </head>
 <body class="light-theme">
-    <div class="admin-container">
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="header-left">
-                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <a href="admin-panel.html" class="brand" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
-                    <span class="brand-icon">🛡️</span>
-                    <span class="brand-text">BitBot Admin</span>
-                </a>
-            </div>
-
-            <div class="header-right">
-                <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <div class="user-menu">
-                    <button class="user-avatar" id="userMenuToggle" aria-label="User Menu">
-                        <i class="fas fa-user-circle"></i>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="settings.html" class="dropdown-item">
-                            <i class="fas fa-cog"></i>
-                            Settings
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Logout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Left Sidebar Navigation -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-content">
-                <ul class="sidebar-menu">
-                    <li class="menu-item">
-                        <a href="admin-panel.html" class="menu-link">
-                            <i class="fas fa-chart-pie"></i>
-                            <span class="menu-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="courses.html" class="menu-link">
-                            <i class="fas fa-book"></i>
-                            <span class="menu-text">Courses</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="timetables.html" class="menu-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span class="menu-text">Time Tables</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="syllabus.html" class="menu-link">
-                            <i class="fas fa-file-alt"></i>
-                            <span class="menu-text">Syllabus</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="notices.html" class="menu-link">
-                            <i class="fas fa-bullhorn"></i>
-                            <span class="menu-text">Notices</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="fee-structure.html" class="menu-link">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span class="menu-text">Fee Structure</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="faculty.html" class="menu-link">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span class="menu-text">Faculty</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="college-info.html" class="menu-link">
-                            <i class="fas fa-university"></i>
-                            <span class="menu-text">College Info</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="students.html" class="menu-link active">
-                            <i class="fas fa-users"></i>
-                            <span class="menu-text">Students</span>
-                        </a>
-                    </li>
-
-
-                </ul>
-            </div>
-        </nav>
-
-        <!-- Sidebar Overlay for Mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Dynamic Navbar Container -->
+    <div id="navbar"></div>
 
         <!-- Main Content Area -->
         <main class="main-content" id="mainContent">
@@ -284,7 +186,6 @@
                 </div>
             </section>
         </main>
-    </div>
 
     <!-- JavaScript Libraries -->
     <!-- Tabulator JS -->
@@ -296,9 +197,7 @@
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 
-    <!-- Firebase SDK -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/firebase-service.js"></script>
+
 
     <!-- Admin Panel JavaScript -->
     <script src="js/admin-panel.js"></script>
@@ -317,5 +216,8 @@
             }
         });
     </script>
+    <!-- Navbar JavaScript -->
+    <script src="js/navside.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Notices - BitBot Admin | Bhagwant Institute of Technology</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/admin-panel.css">
+    <link rel="stylesheet" href="css/library-theme.css">
+    <link rel="stylesheet" href="css/notices.css">
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="css/navside.css">
+
+</head>
+<body class="light-theme">
+    <!-- Dynamic Navbar Container -->
+    <div id="navbar"></div>
+
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading...</span>
+            </div>
+
+            <!-- View Notices Section -->
+            <section id="view-notices-section" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title notice-title">View All Notices</h1>
+                    <div class="section-actions notice-actions">
+                        <button class="btn-import-courses" id="importNoticesBtn">
+                            <i class="fas fa-upload"></i>
+                            Import Notices
+                        </button>
+                        <button class="btn-export-courses" id="exportNoticesBtn">
+                            <i class="fas fa-download"></i>
+                            Export Notices
+                        </button>
+                        <a href="notices.html" class="btn-add-course">
+                            <i class="fas fa-plus"></i>
+                            Add New Notice
+                        </a>
+                    </div>
+                </div>
+
+                <div class="content-grid full-width">
+                    <div class="all-courses-container">
+                        <div class="all-courses-header">
+                            <h3 class="all-courses-title">
+                                <i class="fas fa-bullhorn"></i>
+                                Notice Management
+                            </h3>
+                            <div class="courses-stats">
+                                <span class="stat-item">
+                                    <i class="fas fa-bell"></i>
+                                    Total: <span id="totalNoticesCount">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="all-courses-content">
+                            <div id="noticesTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    <!-- Edit Notice Modal -->
+    <div id="editNoticeModal" class="notice-edit-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Edit Notice</h3>
+                <button class="modal-close" onclick="closeEditNoticeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editNoticeForm">
+                    <input type="hidden" id="editNoticeId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editNoticeTitle">Notice Title:</label>
+                            <input type="text" id="editNoticeTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editNoticeDate">Date:</label>
+                            <input type="date" id="editNoticeDate" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editNoticeDescription">Description:</label>
+                        <textarea id="editNoticeDescription" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editNoticeCourses">Target Courses:</label>
+                            <select id="editNoticeCourses" class="form-control" multiple>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editNoticeAttachment">Attachment URL:</label>
+                            <input type="url" id="editNoticeAttachment" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel-notice" onclick="closeEditNoticeModal()">Cancel</button>
+                        <button type="submit" class="btn-save-notice">Update Notice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <!-- PapaParse for CSV handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- Admin Panel JavaScript -->
+    <script src="js/admin-panel.js"></script>
+
+    <!-- Courses JavaScript (includes dropdown functionality) -->
+    <script src="js/courses.js"></script>
+
+    <!-- Notices JavaScript (handles both add and view functionality) -->
+    <script src="js/notices.js"></script>
+
+    <script>
+        // Initialize view notices page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('View Notices page loaded');
+
+            // Initialize admin panel
+            if (window.AdminPanel) {
+                window.adminPanel = new AdminPanel();
+                window.adminPanel.currentPage = 'view-notices';
+            }
+
+            // Initialize view notices functionality
+            if (window.ViewNoticesPage) {
+                window.ViewNoticesPage.initializeViewNoticesPage();
+            }
+        });
+
+        // Global functions for notice operations
+        function editNotice(noticeId) {
+            if (window.viewNoticesManager) {
+                window.viewNoticesManager.editNotice(noticeId);
+            }
+        }
+
+        function deleteNotice(noticeId) {
+            if (window.viewNoticesManager) {
+                window.viewNoticesManager.deleteNotice(noticeId);
+            }
+        }
+
+        function closeEditNoticeModal() {
+            document.getElementById('editNoticeModal').style.display = 'none';
+        }
+    </script>
+    <!-- Navbar JavaScript -->
+    <script src="js/navside.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Fee Structures - BitBot Admin | Bhagwant Institute of Technology</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="../assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tabulator CSS -->
+    <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/admin-panel.css">
+    <link rel="stylesheet" href="css/library-theme.css">
+    <link rel="stylesheet" href="css/fee.css">
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="css/navside.css">
+
+</head>
+<body class="light-theme">
+    <!-- Dynamic Navbar Container -->
+    <div id="navbar"></div>
+
+
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Loading Indicator -->
+            <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>Loading...</span>
+            </div>
+
+            <!-- View Fee Structures Section -->
+            <section id="view-fees-section" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title fee-title">View All Fee Structures</h1>
+                    <div class="section-actions fee-actions">
+                        <button class="btn-import-courses" id="importFeesBtn">
+                            <i class="fas fa-upload"></i>
+                            Import Fees
+                        </button>
+                        <button class="btn-export-courses" id="exportFeesBtn">
+                            <i class="fas fa-download"></i>
+                            Export Fees
+                        </button>
+                        <a href="fee-structure.html" class="btn-add-course">
+                            <i class="fas fa-plus"></i>
+                            Add New Fee Structure
+                        </a>
+                    </div>
+                </div>
+
+                <div class="content-grid full-width">
+                    <div class="all-courses-container">
+                        <div class="all-courses-header">
+                            <h3 class="all-courses-title">
+                                <i class="fas fa-dollar-sign"></i>
+                                Fee Structure Management
+                            </h3>
+                            <div class="courses-stats">
+                                <span class="stat-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Total: <span id="totalFeesCount">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="all-courses-content">
+                            <div id="feesTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    <!-- Edit Fee Modal -->
+    <div id="editFeeModal" class="fee-edit-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Edit Fee Structure</h3>
+                <button class="modal-close" onclick="closeEditFeeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editFeeForm">
+                    <input type="hidden" id="editFeeId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editFeeCourse">Course:</label>
+                            <select id="editFeeCourse" class="form-control" required>
+                                <option value="">-- Select Course --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAdmissionFee">Admission Fee (₹):</label>
+                            <input type="number" id="editAdmissionFee" class="form-control" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editSemwiseFee">Semester-wise Fee (₹):</label>
+                            <input type="number" id="editSemwiseFee" class="form-control" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editHostelFee">Hostel Fee (₹):</label>
+                            <input type="number" id="editHostelFee" class="form-control" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editBusFee">Bus Fee (₹):</label>
+                            <input type="number" id="editBusFee" class="form-control" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="editFeePaymentLink">Payment Link:</label>
+                            <input type="url" id="editFeePaymentLink" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editScholarshipInfo">Scholarship Information:</label>
+                        <textarea id="editScholarshipInfo" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel-fee" onclick="closeEditFeeModal()">Cancel</button>
+                        <button type="submit" class="btn-save-fee">Update Fee Structure</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <!-- Tabulator JS -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+
+    <!-- Toastify JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <!-- PapaParse for CSV handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- Admin Panel JavaScript -->
+    <script src="js/admin-panel.js"></script>
+
+    <!-- Courses JavaScript (includes dropdown functionality) -->
+    <script src="js/courses.js"></script>
+
+    <!-- Fee JavaScript (handles both add and view functionality) -->
+    <script src="js/fee.js"></script>
+
+    <script>
+        // Initialize view fees page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('View Fees page loaded');
+
+            // Initialize admin panel
+            if (window.AdminPanel) {
+                window.adminPanel = new AdminPanel();
+                window.adminPanel.currentPage = 'view-fees';
+            }
+
+            // Initialize view fees functionality
+            if (window.ViewFeesPage) {
+                window.ViewFeesPage.initializeViewFeesPage();
+            }
+        });
+
+        // Global functions for fee operations
+        function editFee(feeId) {
+            if (window.viewFeesManager) {
+                window.viewFeesManager.editFee(feeId);
+            }
+        }
+
+        function deleteFee(feeId) {
+            if (window.viewFeesManager) {
+                window.viewFeesManager.deleteFee(feeId);
+            }
+        }
+
+        function closeEditFeeModal() {
+            document.getElementById('editFeeModal').style.display = 'none';
+        }
+    </script>
+    <!-- Navbar JavaScript -->
+    <script src="js/navside.js"></script>
+
+</body>
+</html>

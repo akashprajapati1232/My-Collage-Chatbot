@@ -27,114 +27,20 @@
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
 
+    <!-- Quill.js CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/admin-panel.css">
     <link rel="stylesheet" href="css/library-theme.css">
+    <link rel="stylesheet" href="css/notices.css">
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="css/navside.css">
+
 </head>
 <body class="light-theme">
-    <div class="admin-container">
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="header-left">
-                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <a href="admin-panel.html" class="brand" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
-                    <span class="brand-icon">🛡️</span>
-                    <span class="brand-text">BitBot Admin</span>
-                </a>
-            </div>
-
-            <div class="header-right">
-                <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <div class="user-menu">
-                    <button class="user-avatar" id="userMenuToggle" aria-label="User Menu">
-                        <i class="fas fa-user-circle"></i>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="settings.html" class="dropdown-item">
-                            <i class="fas fa-cog"></i>
-                            Settings
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Logout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Left Sidebar Navigation -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-content">
-                <ul class="sidebar-menu">
-                    <li class="menu-item">
-                        <a href="admin-panel.html" class="menu-link">
-                            <i class="fas fa-chart-pie"></i>
-                            <span class="menu-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="courses.html" class="menu-link">
-                            <i class="fas fa-book"></i>
-                            <span class="menu-text">Courses</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="timetables.html" class="menu-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span class="menu-text">Time Tables</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="syllabus.html" class="menu-link">
-                            <i class="fas fa-file-alt"></i>
-                            <span class="menu-text">Syllabus</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="notices.html" class="menu-link active">
-                            <i class="fas fa-bullhorn"></i>
-                            <span class="menu-text">Notices</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="fee-structure.html" class="menu-link">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span class="menu-text">Fee Structure</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="faculty.html" class="menu-link">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span class="menu-text">Faculty</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="college-info.html" class="menu-link">
-                            <i class="fas fa-university"></i>
-                            <span class="menu-text">College Info</span>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="students.html" class="menu-link">
-                            <i class="fas fa-users"></i>
-                            <span class="menu-text">Students</span>
-                        </a>
-                    </li>
-
-
-                </ul>
-            </div>
-        </nav>
-
-        <!-- Sidebar Overlay for Mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Dynamic Navbar Container -->
+    <div id="navbar"></div>
 
         <!-- Main Content Area -->
         <main class="main-content" id="mainContent">
@@ -149,66 +55,124 @@
             <!-- Notices Section -->
             <section id="notices-section" class="content-section active">
                 <div class="section-header">
-                    <h1 class="section-title">Notice Management</h1>
-                    <div class="section-actions">
-                        <button class="btn btn-outline" id="searchNotices">
-                            <i class="fas fa-search"></i>
-                            Search
+                    <h1 class="section-title notice-title">Notice Management</h1>
+                    <div class="section-actions notice-actions">
+                        <button class="btn-import-notices" id="bulkImportBtn">
+                            <i class="fas fa-upload"></i>
+                            Import CSV
                         </button>
-                        <button class="btn btn-primary" id="addNoticeBtn">
-                            <i class="fas fa-plus"></i>
-                            Add Notice
+                        <button class="btn-export-notices" id="bulkExportBtn">
+                            <i class="fas fa-download"></i>
+                            Export CSV
+                        </button>
+                        <button class="btn-view-notices" id="viewAllNoticesBtn">
+                            <i class="fas fa-eye"></i>
+                            View All Notices
                         </button>
                     </div>
                 </div>
 
-                <div class="form-container">
-                    <form id="noticeForm" class="admin-form">
-                        <input type="hidden" id="noticeId" name="noticeId">
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="noticeTitle">Title *</label>
-                                <input type="text" id="noticeTitle" name="title" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="noticeDate">Date *</label>
-                                <input type="date" id="noticeDate" name="date" required>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label for="noticeDescription">Description *</label>
-                                <textarea id="noticeDescription" name="description" rows="4" required></textarea>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label for="noticeCourses">Courses (Multi-select) *</label>
-                                <select id="noticeCourses" name="courses" multiple required>
-                                    <!-- Options will be populated dynamically -->
-                                </select>
-                                <small>Hold Ctrl/Cmd to select multiple courses</small>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label for="noticeAttachment">Attachment URL</label>
-                                <input type="url" id="noticeAttachment" name="attachment" placeholder="https://...">
-                            </div>
+                <div class="content-grid full-width">
+                    <div class="notice-form-container">
+                        <div class="notice-form-header">
+                            <h3 class="notice-form-title">
+                                <i class="fas fa-plus-circle"></i>
+                                Create New Notice
+                            </h3>
                         </div>
+                        <div class="notice-form-content">
+                            <form id="noticeForm" class="modern-form">
+                                <input type="hidden" id="noticeId" name="noticeId">
 
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save Notice</button>
-                            <button type="button" class="btn btn-secondary" id="resetNoticeForm">Reset</button>
+                                <div class="notice-form-grid">
+                                    <div class="notice-form-group">
+                                        <label class="notice-form-label" for="noticeTitle">📢 Notice Title *</label>
+                                        <input class="notice-form-input" type="text" id="noticeTitle" name="noticeTitle" placeholder="e.g., Important Exam Schedule Update" required minlength="5" maxlength="200">
+                                    </div>
+
+                                    <div class="notice-form-group">
+                                        <label class="notice-form-label" for="publishDateTime">📅 Publish Date & Time *</label>
+                                        <input class="notice-form-input" type="datetime-local" id="publishDateTime" name="publishDateTime" required>
+                                    </div>
+
+                                    <div class="notice-form-group">
+                                        <label class="notice-form-label" for="expiryDate">⏰ Expiry Date (Optional)</label>
+                                        <input class="notice-form-input" type="date" id="expiryDate" name="expiryDate">
+                                    </div>
+
+                                    <div class="notice-form-group">
+                                        <label class="notice-form-label" for="postedBy">👤 Posted By *</label>
+                                        <input class="notice-form-input" type="text" id="postedBy" name="postedBy" placeholder="Enter admin name or department" required minlength="2" maxlength="100">
+                                    </div>
+
+                                    <div class="notice-form-group" style="grid-column: 1 / -1;">
+                                        <label class="notice-form-label" for="targetAudience">🎯 Target Audience *</label>
+                                        <input class="notice-form-input" type="text" id="targetAudience" name="targetAudience" placeholder="e.g., All Students, BCA Students, Faculty, First Year" required minlength="3" maxlength="200">
+                                        <small class="form-help">Enter target audience (e.g., "All Students", "BCA Students", "Faculty Only", "First Year Students")</small>
+                                    </div>
+
+                                    <div class="notice-form-group" style="grid-column: 1 / -1;">
+                                        <label class="notice-form-label" for="noticeDescription">📝 Notice Description *</label>
+                                        <div id="quillEditor" class="quill-editor"></div>
+                                        <textarea id="noticeDescription" name="noticeDescription" style="display: none;" required></textarea>
+                                    </div>
+
+                                    <div class="notice-form-group" style="grid-column: 1 / -1;">
+                                        <label class="notice-form-label" for="attachmentFile">📎 Attachment Upload (Optional)</label>
+                                        <div class="file-upload-container">
+                                            <input class="notice-form-input file-input" type="file" id="attachmentFile" name="attachmentFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                            <div class="file-upload-info">
+                                                <small>Supported formats: PDF, Images (JPG, PNG), Word Documents. Max size: 10MB</small>
+                                                <div id="uploadProgress" class="upload-progress" style="display: none;">
+                                                    <div class="progress-bar">
+                                                        <div class="progress-fill" id="progressFill"></div>
+                                                    </div>
+                                                    <span class="progress-text" id="progressText">0%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="notice-form-actions">
+                                    <button type="submit" class="btn-save-notice">
+                                        <i class="fas fa-save"></i>
+                                        Publish Notice
+                                    </button>
+                                    <button type="button" class="btn-reset-notice" id="resetNoticeBtn">
+                                        <i class="fas fa-undo"></i>
+                                        Reset Form
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
-                <div class="data-list" id="noticesList">
-                    <!-- Notices will be loaded here -->
+                <!-- All Notices Display Section -->
+                <div class="all-notices-container">
+                    <div class="all-notices-header">
+                        <h3 class="all-notices-title">
+                            <i class="fas fa-list-ul"></i>
+                            All Published Notices
+                        </h3>
+                        <div class="notices-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-bullhorn"></i>
+                                <span id="totalNotices">0</span> Total
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-clock"></i>
+                                <span id="activeNotices">0</span> Active
+                            </div>
+                        </div>
+                    </div>
+                    <div class="all-notices-content">
+                        <div id="noticesTable"></div>
+                    </div>
                 </div>
             </section>
         </main>
-    </div>
 
     <!-- JavaScript Libraries -->
     <!-- Tabulator JS -->
@@ -220,12 +184,17 @@
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 
-    <!-- Firebase SDK -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/firebase-service.js"></script>
+    <!-- Quill.js JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <!-- PapaParse JS for CSV handling -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+
 
     <!-- Admin Panel JavaScript -->
     <script src="js/admin-panel.js"></script>
+    <script src="js/notices.js"></script>
     
     <script>
         // Initialize the admin panel for notices page
@@ -239,7 +208,17 @@
                 window.adminPanel.currentPage = 'notices';
                 console.log('Using existing AdminPanel instance for notices');
             }
+
+            // Initialize notices manager after admin panel is ready
+            setTimeout(() => {
+                if (window.NoticeManager) {
+                    window.noticeManager = new NoticeManager();
+                }
+            }, 500);
         });
     </script>
+    <!-- Navbar JavaScript -->
+    <script src="js/navside.js"></script>
+
 </body>
 </html>

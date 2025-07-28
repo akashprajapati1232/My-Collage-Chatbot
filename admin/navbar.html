@@ -1,0 +1,195 @@
+<!-- Top Navigation Bar -->
+<nav class="navbar" id="navbar">
+    <div class="navbar-container">
+        <!-- Hamburger Menu Toggle -->
+        <button class="hamburger-toggle" id="hamburgerToggle" title="Toggle Menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
+        <!-- Logo and Brand -->
+        <a href="admin-panel.html" class="navbar-brand" id="navbarBrand">
+            <div class="brand-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">BitBot Admin</span>
+                <span class="brand-subtitle">Dashboard</span>
+            </div>
+        </a>
+
+        <!-- Right Side Actions -->
+        <div class="navbar-actions">
+            <!-- Theme Toggle Button -->
+            <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+                <i class="fas fa-sun light-icon"></i>
+                <i class="fas fa-moon dark-icon"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <button class="profile-trigger" id="profileTrigger">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="dropdown-info">
+                            <span class="dropdown-name">Admin User</span>
+                            <span class="dropdown-email">admin@bitcollege.edu</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="#settings" class="dropdown-item" id="settingsOption">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#logout" class="dropdown-item logout-item" id="logoutOption">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Log Out</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar Navigation (Hidden by default) -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <div class="brand-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <span class="brand-name">BitBot Admin</span>
+        </div>
+        <button class="sidebar-close" id="sidebarClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <nav class="sidebar-nav">
+            <!-- Dashboard -->
+            <a href="admin-panel.html" class="sidebar-link active" data-section="dashboard">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <!-- Course -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="course-menu">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Course</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="course-menu">
+                    <a href="courses.html" class="sidebar-sublink">Add Course</a>
+                    <a href="courses_view.html" class="sidebar-sublink">View Courses</a>
+                </div>
+            </div>
+
+            <!-- Syllabus -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="syllabus-menu">
+                    <i class="fas fa-book-open"></i>
+                    <span>Syllabus</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="syllabus-menu">
+                    <a href="syllabus.html" class="sidebar-sublink">Add Syllabus</a>
+                    <a href="syllabus_view.html" class="sidebar-sublink">View Syllabus</a>
+                </div>
+            </div>
+
+            <!-- Time Table -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="timetable-menu">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Time Table</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="timetable-menu">
+                    <a href="timetables.html" class="sidebar-sublink">Add Time Table</a>
+                    <a href="timetables_view.html" class="sidebar-sublink">View Time Table</a>
+                </div>
+            </div>
+
+            <!-- Notice -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="notice-menu">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Notice</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="notice-menu">
+                    <a href="notices.html" class="sidebar-sublink">Add Notice</a>
+                    <a href="notice_view.html" class="sidebar-sublink">View Notices</a>
+                </div>
+            </div>
+
+            <!-- Fee Structure -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="fee-menu">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Fee Structure</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="fee-menu">
+                    <a href="fee-structure.html" class="sidebar-sublink">Add Fee Structure</a>
+                    <a href="fee-structure_view.html" class="sidebar-sublink">View Fee Structure</a>
+                </div>
+            </div>
+
+            <!-- Faculty -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="faculty-menu">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Faculty</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="faculty-menu">
+                    <a href="faculty.html" class="sidebar-sublink">Add Faculty</a>
+                    <a href="faculty_view.html" class="sidebar-sublink">View Faculty</a>
+                </div>
+            </div>
+
+            <!-- College Info -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="college-menu">
+                    <i class="fas fa-university"></i>
+                    <span>College Info</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="college-menu">
+                    <a href="college_info.html" class="sidebar-sublink">Add College Info</a>
+                    <a href="college_info_view.html" class="sidebar-sublink">View College Info</a>
+                </div>
+            </div>
+
+            <!-- Student -->
+            <div class="sidebar-group">
+                <button class="sidebar-group-toggle" data-target="student-menu">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="sidebar-submenu" id="student-menu">
+                    <a href="students.html" class="sidebar-sublink">Add Student</a>
+                    <a href="student_view.html" class="sidebar-sublink">View Students</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</aside>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
